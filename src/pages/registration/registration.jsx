@@ -1,36 +1,68 @@
 import { useState } from "react";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import {
+  registerUser,
+  loginUser,
+  logoutUser,
+  loginWithGoogle,
+} from "../../base/base"; // Добавим функцию для входа через Google
 
 const Registration = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userInfo, setUserInfo] = useState(null); // Новое состояние для хранения информации о пользователе
 
-  const handleRegister = () => {
-    // Ваш код для регистрации
+  // Функция для проверки корректности email
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
-  const handleLogin = async () => {
-    const auth = getAuth();
-    const provider = new GoogleAuthProvider();
+  const handleRegister = () => {
+    if (email === "" || password === "") {
+      console.error("Email и пароль не должны быть пустыми.");
+      return;
+    }
 
+    if (!isValidEmail(email)) {
+      console.error("Неверный формат email.");
+      return;
+    }
+
+    registerUser(email, password);
+  };
+
+  const handleLogin = () => {
+    if (email === "" || password === "") {
+      console.error("Email и пароль не должны быть пустыми.");
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      console.error("Неверный формат email.");
+      return;
+    }
+
+    loginUser(email, password);
+  };
+
+  const handleGoogleLogin = async () => {
     try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-
-      // Устанавливаем информацию о пользователе в состояние
-      setUserInfo({
-        email: user.email,
-        photoURL: user.photoURL,
-      });
+      const user = await loginWithGoogle(); // Вход через Google
+      if (user) {
+        // Устанавливаем информацию о пользователе в состояние
+        setUserInfo({
+          email: user.email,
+          photoURL: user.photoURL,
+        });
+      }
     } catch (error) {
-      console.error("Error logging in with Google: ", error);
+      console.error("Ошибка при входе через Google: ", error);
     }
   };
 
   const handleLogout = () => {
-    // Ваш код для выхода
-    setUserInfo(null); // Очищаем информацию о пользователе
+    logoutUser();
+    setUserInfo(null); // Очищаем информацию о пользователе при выходе
   };
 
   return (
@@ -48,8 +80,9 @@ const Registration = () => {
         placeholder="Password"
       />
       <button onClick={handleRegister}>Register</button>
-      <button onClick={handleLogin}>Login with Google</button>
+      <button onClick={handleLogin}>Login</button>
       <button onClick={handleLogout}>Logout</button>
+      <button onClick={handleGoogleLogin}>Login with Google</button>
 
       {/* Отображаем информацию о пользователе */}
       {userInfo && (
