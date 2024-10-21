@@ -1,0 +1,114 @@
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  height: 90px;
+  align-items: center;
+}
+
+.linksHeader {
+  display: flex;
+  gap: 30px;
+}
+
+.linksHeader a {
+  color: #b2b2b2;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.linksHeader a.active {
+  color: white;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+@keyframes square {
+  0% {
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    transform: translateX(-50%) scale(1.4);
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
+}
+.linksHeader a::after {
+  content: "";
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  opacity: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #9054f8;
+  transition: all 0.3s ease;
+  animation: square 1s ease infinite;
+}
+
+.linksHeader a.active::after {
+  opacity: 1;
+  transition: all 0.3s ease;
+}
+
+.logo {
+  max-width: 132px;
+  height: 132px;
+}
+
+.linksOrderAcount {
+  display: flex;
+  gap: 15px;
+}
+
+.accountLink,
+.orderLink {
+  padding: 15px 34px;
+  background-color: #9054f8;
+  color: white;
+  border-radius: 26px;
+  transition: all 0.3s ease;
+}
+
+.orderLink:hover {
+  background-color: #9054f8a9;
+  transition: all 0.3s ease;
+}
+
+.Reg {
+  background-color: white;
+  color: #9054f8;
+}
+
+.Reg:hover {
+  background-color: rgba(255, 255, 255, 0.622);
+  transition: all 0.3s ease;
+  color: #ffffff;
+}
+
+// npm установить firebase
+// Затем инициализируйте Firebase и начните использовать SDK для нужных вам продуктов.
+
+// // Import the functions you need from the SDKs you need
+// import { initializeApp } from "firebase/app";
+// import { getAnalytics } from "firebase/analytics";
+// // TODO: Add SDKs for Firebase products that you want to use
+// // https://firebase.google.com/docs/web/setup#available-libraries
+
+// // Your web app's Firebase configuration
+// // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// const firebaseConfig = {
+//   apiKey: "AIzaSyBtxFcRd62UhS4IfKk7ZomPAsd_BPTUgyQ",
+//   authDomain: "firsttwenli-df79a.firebaseapp.com",
+//   projectId: "firsttwenli-df79a",
+//   storageBucket: "firsttwenli-df79a.appspot.com",
+//   messagingSenderId: "114801264499",
+//   appId: "1:114801264499:web:44873c3fb1d0fb59aae706",
+//   measurementId: "G-LWNJM51VDF"
+// };
+
+// // Initialize Firebase
+// const app = initializeApp(firebaseConfig);
+// const analytics = getAnalytics(app);
