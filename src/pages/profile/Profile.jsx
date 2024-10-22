@@ -1,6 +1,6 @@
 // src/pages/profile/Profile.jsx
 import React, { useEffect, useState } from "react";
-import { getAuth } from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -20,6 +20,18 @@ const Profile = () => {
     setLoading(false);
   }, []);
 
+  const handleLogout = () => {
+    const auth = getAuth();
+    signOut(auth)
+      .then(() => {
+        console.log("User signed out");
+        setUser(null); // Сбрасываем состояние пользователя
+      })
+      .catch((error) => {
+        console.error("Error signing out:", error);
+      });
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -31,6 +43,7 @@ const Profile = () => {
           <h2>Welcome, {user.name}</h2>
           <img src={user.picture} alt={user.name} />
           <p>Email: {user.email}</p>
+          <button onClick={handleLogout}>Logout</button> {/* Кнопка выхода */}
         </>
       ) : (
         <p>Please log in to see your profile.</p>
