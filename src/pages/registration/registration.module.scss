@@ -1,0 +1,112 @@
+.formPage {
+  display: flex;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding: 80px 0px;
+  form {
+    padding: 30px;
+    background-color: white;
+    border-radius: 30px;
+  }
+}
+
+.textMarketing {
+  box-sizing: border-box;
+  padding: 100px 0px 0px 0px;
+  color: white;
+  flex: 0 0 30%;
+}
+
+.customInput {
+  font-size: 16px;
+  padding: 9px;
+}
+
+.customLabel {
+  font-size: 17px;
+}
+
+.formContainer {
+  flex: 0 0 40%;
+  box-sizing: border-box;
+}
+
+.btnSubmitForm {
+  display: flex;
+  justify-content: center;
+  button {
+    padding: 22px 80px;
+  }
+}
+
+.ActiveText {
+  color: #9054f8;
+}
+
+.titleSpan {
+  font-size: 70px;
+  border-bottom: 1px solid rgb(255, 255, 255);
+}
+
+.titleForm {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 30px;
+}
+
+.formContainer {
+  transition: all 0.5s ease;
+  opacity: 0;
+  transform: translateY(20px);
+  &.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.or {
+  color: #9054f8;
+  font-size: 14px;
+  position: relative;
+}
+
+.or::after {
+  content: "";
+  position: absolute;
+  left: 37px;
+  top: 9px;
+  width: 50px;
+  height: 1px;
+  background-color: #9054f842;
+  color: #9054f8;
+}
+
+.or::before {
+  content: "";
+  position: absolute;
+  right: 37px;
+  top: 9px;
+  width: 50px;
+  height: 1px;
+  background-color: #9054f842;
+  color: #9054f8;
+}
+
+.formLinks {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+
+  button {
+    padding: 19px;
+    img {
+      max-width: 30px;
+    }
+  }
+}
+
+.formItem {
+  display: flex;
+  flex-direction: column;
+}
