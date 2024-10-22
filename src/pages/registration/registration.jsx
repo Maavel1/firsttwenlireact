@@ -1,20 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   registerUser,
   loginUser,
   logoutUser,
   loginWithGoogle,
   sendVerificationEmail,
+  auth, // Импортируйте auth
 } from "../../base/base";
 import { useNavigate } from "react-router-dom";
 import { Button, Form, Input } from "antd";
 import * as Yup from "yup"; // Импортируем Yup
 import { Formik } from "formik"; // Импортируем Formik
+import { onAuthStateChanged } from "firebase/auth"; // Импортируйте onAuthStateChanged
 
 const Registration = () => {
   const [isLogin, setIsLogin] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  // Слушатель для проверки статуса аутентификации
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigate("/profile"); // Редирект на профиль после успешного входа
+      }
+    });
+
+    return () => unsubscribe();
+  }, [navigate]);
 
   // Создаем схему валидации с помощью Yup
   const validationSchema = Yup.object().shape({

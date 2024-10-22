@@ -2,7 +2,8 @@ import { initializeApp } from "firebase/app";
 import {
   getAuth,
   GoogleAuthProvider,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
@@ -33,7 +34,7 @@ export const sendVerificationEmail = (user) => {
 
 // Инициализация Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+export const auth = getAuth(app); // Экспортируйте auth
 const googleProvider = new GoogleAuthProvider();
 
 // Регистрация нового пользователя
@@ -84,12 +85,25 @@ export const logoutUser = async () => {
 // Вход через Google
 export const loginWithGoogle = async () => {
   try {
-    const result = await signInWithPopup(auth, googleProvider);
-    const user = result.user;
-    console.log("User logged in with Google:", user);
-    return user;
+    await signInWithRedirect(auth, googleProvider);
+    // Поскольку signInWithRedirect не возвращает пользователя сразу,
+    // вам нужно будет обработать результат позже, на странице после редиректа
   } catch (error) {
     console.error("Error logging in with Google:", error.code, error.message);
     throw error;
+  }
+};
+
+// Получение результата редиректа
+export const handleRedirectResult = async () => {
+  try {
+    const result = await getRedirectResult(auth);
+    if (result) {
+      const user = result.user;
+      console.log("User logged in with Google:", user);
+      return user;
+    }
+  } catch (error) {
+    console.error("Error getting redirect result:", error);
   }
 };
