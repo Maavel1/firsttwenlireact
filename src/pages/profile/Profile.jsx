@@ -1,6 +1,5 @@
-// src/pages/profile/Profile.jsx
 import React, { useEffect, useState } from "react";
-import { getAuth, signOut } from "firebase/auth";
+import { getAuth, signOut, getRedirectResult } from "firebase/auth";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -8,16 +7,40 @@ const Profile = () => {
 
   useEffect(() => {
     const auth = getAuth();
+
+    // Обработка результата редиректа
+    const handleRedirectResult = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result && result.user) {
+          setUser({
+            name: result.user.displayName || "User",
+            email: result.user.email,
+            picture: result.user.photoURL,
+          });
+        }
+      } catch (error) {
+        console.error("Error getting redirect result:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    handleRedirectResult(); // Вызов функции для обработки результата редиректа
+
     const currentUser = auth.currentUser;
 
+    // Если пользователь уже аутентифицирован без редиректа
     if (currentUser) {
       setUser({
         name: currentUser.displayName || "User",
         email: currentUser.email,
         picture: currentUser.photoURL,
       });
+      setLoading(false);
+    } else {
+      setLoading(false); // Установить загрузку в false, если нет текущего пользователя
     }
-    setLoading(false);
   }, []);
 
   const handleLogout = () => {
@@ -43,7 +66,7 @@ const Profile = () => {
           <h2>Welcome, {user.name}</h2>
           <img src={user.picture} alt={user.name} />
           <p>Email: {user.email}</p>
-          <button onClick={handleLogout}>Logout</button> {/* Кнопка выхода */}
+          <button onClick={handleLogout}>Logout</button>
         </>
       ) : (
         <p>Please log in to see your profile.</p>
