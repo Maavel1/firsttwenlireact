@@ -1,4 +1,3 @@
-// base.js
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
@@ -7,17 +6,29 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  sendEmailVerification as firebaseSendEmailVerification,
 } from "firebase/auth";
 
-// Ваша конфигурация Firebase
+// Конфигурация Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBtxFcRd62UhS4IfKk7ZomPAsd_BPTUgyQ",
   authDomain: "firsttwenli-df79a.firebaseapp.com",
   projectId: "firsttwenli-df79a",
-  storageBucket: "firsttwenli-df79a.appspot.com",
+  storageBucket: "firsttwenli-df79a",
   messagingSenderId: "114801264499",
   appId: "1:114801264499:web:44873c3fb1d0fb59aae706",
   measurementId: "G-LWNJM51VDF",
+};
+
+// Отправка письма для подтверждения email
+export const sendVerificationEmail = (user) => {
+  return firebaseSendEmailVerification(user)
+    .then(() => {
+      console.log("Email verification sent.");
+    })
+    .catch((error) => {
+      console.error("Error sending email verification:", error);
+    });
 };
 
 // Инициализация Firebase
@@ -38,7 +49,7 @@ export const registerUser = async (email, password) => {
     return user;
   } catch (error) {
     console.error("Error creating user:", error.code, error.message);
-    throw error; // Перебрасываем ошибку для обработки в вызывающем коде
+    throw error;
   }
 };
 
@@ -55,7 +66,7 @@ export const loginUser = async (email, password) => {
     return user;
   } catch (error) {
     console.error("Error logging in:", error.code, error.message);
-    throw error; // Перебрасываем ошибку для обработки в вызывающем коде
+    throw error;
   }
 };
 
@@ -66,7 +77,7 @@ export const logoutUser = async () => {
     console.log("User logged out");
   } catch (error) {
     console.error("Error logging out:", error);
-    throw error; // Перебрасываем ошибку для обработки в вызывающем коде
+    throw error;
   }
 };
 
@@ -79,6 +90,6 @@ export const loginWithGoogle = async () => {
     return user;
   } catch (error) {
     console.error("Error logging in with Google:", error.code, error.message);
-    throw error; // Перебрасываем ошибку для обработки в вызывающем коде
+    throw error;
   }
 };

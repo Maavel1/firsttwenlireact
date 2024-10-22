@@ -1,71 +1,87 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   registerUser,
   loginUser,
   logoutUser,
   loginWithGoogle,
-} from "../../base/base"; // Импортируйте функции для работы с Firebase
-import { useNavigate } from "react-router-dom"; // Импортируйте useNavigate из react-router-dom
-import { auth } from "../../base/base"; // Предположим, что у вас есть файл base.js, где инициализирован Firebase
+  sendVerificationEmail, // Импортируем корректную функцию
+} from "../../base/base";
+import { useNavigate } from "react-router-dom";
 
 const Registration = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate(); // Инициализируйте useNavigate
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const navigate = useNavigate();
 
-  // Функция для проверки корректности email
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
   const handleRegister = () => {
-    if (email === "" || password === "") {
-      console.error("Email и пароль не должны быть пустыми.");
+    if (email === "" || password === "" || confirmPassword === "") {
+      setError("Email и пароль не должны быть пустыми.");
       return;
     }
 
     if (!isValidEmail(email)) {
-      console.error("Неверный формат email.");
+      setError("Неверный формат email.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Пароли не совпадают.");
       return;
     }
 
     registerUser(email, password)
-      .then(() => {
-        navigate("/profile"); // Перенаправление на страницу профиля после успешной регистрации
+      .then((user) => {
+        sendVerificationEmail(user); // Отправка письма с подтверждением
+        setError("Регистрация успешна! Проверьте почту для подтверждения.");
+        setTimeout(() => {
+          navigate("/profile");
+        }, 3000);
       })
       .catch((error) => {
-        console.error("Ошибка регистрации:", error);
+        setError(`Ошибка регистрации: ${error.message}`);
       });
   };
 
   const handleLogin = () => {
     if (email === "" || password === "") {
-      console.error("Email и пароль не должны быть пустыми.");
+      setError("Email и пароль не должны быть пустыми.");
       return;
     }
 
     if (!isValidEmail(email)) {
-      console.error("Неверный формат email.");
+      setError("Неверный формат email.");
       return;
     }
 
     loginUser(email, password)
-      .then(() => {
-        navigate("/profile"); // Перенаправление на страницу профиля после успешного входа
+      .then((user) => {
+        if (user.emailVerified) {
+          setIsEmailVerified(true);
+          navigate("/profile");
+        } else {
+          setError("Email не подтвержден. Пожалуйста, проверьте почту.");
+        }
       })
       .catch((error) => {
-        console.error("Ошибка входа:", error);
+        setError(`Ошибка входа: ${error.message}`);
       });
   };
 
   const handleGoogleLogin = () => {
     loginWithGoogle()
       .then(() => {
-        navigate("/profile"); // Перенаправление на страницу профиля после успешного входа через Google
+        navigate("/profile");
       })
       .catch((error) => {
-        console.error("Ошибка входа через Google:", error);
+        setError(`Ошибка входа через Google: ${error.message}`);
       });
   };
 
@@ -75,6 +91,7 @@ const Registration = () => {
 
   return (
     <div>
+      <h2>Регистрация</h2>
       <input
         type="email"
         value={email}
@@ -85,12 +102,19 @@ const Registration = () => {
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
+        placeholder="Пароль"
       />
-      <button onClick={handleRegister}>Register</button>
-      <button onClick={handleLogin}>Login</button>
-      <button onClick={handleLogout}>Logout</button>
-      <button onClick={handleGoogleLogin}>Login with Google</button>
+      <input
+        type="password"
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+        placeholder="Подтвердите пароль"
+      />
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <button onClick={handleRegister}>Зарегистрироваться</button>
+      <button onClick={handleLogin}>Войти</button>
+      <button onClick={handleLogout}>Выйти</button>
+      <button onClick={handleGoogleLogin}>Войти через Google</button>
     </div>
   );
 };
