@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import classes from "./NavBar.module.scss";
 import logo from "../../assets/logo.png";
+import { auth } from "../../base/base";
 
 export default function NavBar() {
   const location = useLocation();
@@ -31,12 +32,18 @@ export default function NavBar() {
           </Link>
         </div>
         <div className={classes.linksOrderAcount}>
-          <Link
-            to="/registration"
-            className={classes.accountLink + " " + classes.Reg}
-          >
-            Регистрация
-          </Link>
+          {user ? (
+            <Link to="/profile" className={classes.accountLink}>
+              Профиль
+            </Link>
+          ) : (
+            <Link
+              to="/registration"
+              className={classes.accountLink + " " + classes.Reg}
+            >
+              Регистрация
+            </Link>
+          )}
           <Link to="/order" className={classes.orderLink}>
             Корзина
           </Link>
