@@ -85,7 +85,7 @@ export const logoutUser = async () => {
 // Вход через Google
 export const loginWithGoogle = async () => {
   try {
-    await signInWithRedirect(auth, googleProvider);
+    await signInWithPopup(auth, googleProvider);
     // Поскольку signInWithRedirect не возвращает пользователя сразу,
     // вам нужно будет обработать результат позже, на странице после редиректа
   } catch (error) {
