@@ -1,14 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   registerUser,
   loginUser,
   logoutUser,
   loginWithGoogle,
-} from "../../base/base"; // Добавим функцию для входа через Google
+} from "../../base/base"; // Импортируйте функции для работы с Firebase
+import { useNavigate } from "react-router-dom"; // Импортируйте useNavigate из react-router-dom
+import { auth } from "../../base/base"; // Предположим, что у вас есть файл base.js, где инициализирован Firebase
 
 const Registration = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate(); // Инициализируйте useNavigate
 
   // Функция для проверки корректности email
   const isValidEmail = (email) => {
@@ -27,7 +30,13 @@ const Registration = () => {
       return;
     }
 
-    registerUser(email, password);
+    registerUser(email, password)
+      .then(() => {
+        navigate("/profile"); // Перенаправление на страницу профиля после успешной регистрации
+      })
+      .catch((error) => {
+        console.error("Ошибка регистрации:", error);
+      });
   };
 
   const handleLogin = () => {
@@ -41,11 +50,23 @@ const Registration = () => {
       return;
     }
 
-    loginUser(email, password);
+    loginUser(email, password)
+      .then(() => {
+        navigate("/profile"); // Перенаправление на страницу профиля после успешного входа
+      })
+      .catch((error) => {
+        console.error("Ошибка входа:", error);
+      });
   };
 
   const handleGoogleLogin = () => {
-    loginWithGoogle(); // Вход через Google
+    loginWithGoogle()
+      .then(() => {
+        navigate("/profile"); // Перенаправление на страницу профиля после успешного входа через Google
+      })
+      .catch((error) => {
+        console.error("Ошибка входа через Google:", error);
+      });
   };
 
   const handleLogout = () => {

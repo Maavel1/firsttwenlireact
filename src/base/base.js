@@ -1,3 +1,4 @@
+// base.js
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
@@ -25,51 +26,59 @@ const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
 // Регистрация нового пользователя
-export const registerUser = (email, password) => {
-  return createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      const user = userCredential.user;
-      console.log("User created:", user);
-      return user;
-    })
-    .catch((error) => {
-      console.error("Error creating user:", error.code, error.message);
-    });
+export const registerUser = async (email, password) => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    const user = userCredential.user;
+    console.log("User created:", user);
+    return user;
+  } catch (error) {
+    console.error("Error creating user:", error.code, error.message);
+    throw error; // Перебрасываем ошибку для обработки в вызывающем коде
+  }
 };
 
 // Вход пользователя
-export const loginUser = (email, password) => {
-  return signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      const user = userCredential.user;
-      console.log("User logged in:", user);
-      return user;
-    })
-    .catch((error) => {
-      console.error("Error logging in:", error.code, error.message);
-    });
+export const loginUser = async (email, password) => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    const user = userCredential.user;
+    console.log("User logged in:", user);
+    return user;
+  } catch (error) {
+    console.error("Error logging in:", error.code, error.message);
+    throw error; // Перебрасываем ошибку для обработки в вызывающем коде
+  }
 };
 
 // Выход пользователя
-export const logoutUser = () => {
-  return signOut(auth)
-    .then(() => {
-      console.log("User logged out");
-    })
-    .catch((error) => {
-      console.error("Error logging out:", error);
-    });
+export const logoutUser = async () => {
+  try {
+    await signOut(auth);
+    console.log("User logged out");
+  } catch (error) {
+    console.error("Error logging out:", error);
+    throw error; // Перебрасываем ошибку для обработки в вызывающем коде
+  }
 };
 
 // Вход через Google
-export const loginWithGoogle = () => {
-  return signInWithPopup(auth, googleProvider)
-    .then((result) => {
-      const user = result.user;
-      console.log("User logged in with Google:", user);
-      return user;
-    })
-    .catch((error) => {
-      console.error("Error logging in with Google:", error.code, error.message);
-    });
+export const loginWithGoogle = async () => {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
+    console.log("User logged in with Google:", user);
+    return user;
+  } catch (error) {
+    console.error("Error logging in with Google:", error.code, error.message);
+    throw error; // Перебрасываем ошибку для обработки в вызывающем коде
+  }
 };
