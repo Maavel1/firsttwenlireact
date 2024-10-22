@@ -1,0 +1,45 @@
+.mainRows {
+  display: flex;
+  height: 70vh;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.TextMain {
+  text-align: left;
+  max-width: 600px;
+  color: white;
+  h1 {
+    font-weight: bold;
+    font-size: 4.3rem;
+    margin-bottom: 30px;
+    line-height: 81px;
+  }
+
+  p {
+    line-height: 32px;
+    font-size: 1.1rem;
+    color: #bdbdbd;
+    margin-bottom: 50px;
+  }
+
+  a {
+    padding: 20px 34px;
+    background-color: #9054f8;
+    color: white;
+    border-radius: 34px;
+    font-size: 1.3rem;
+    line-height: 32px;
+    transition: all 0.3s ease;
+  }
+
+  a:hover {
+    color: white;
+    background-color: #9054f8a8;
+    transition: all 0.3s ease;
+  }
+}
+
+.ActiveText {
+  color: #9054f8;
+}

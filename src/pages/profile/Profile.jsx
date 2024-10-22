@@ -8,7 +8,6 @@ const Profile = () => {
   useEffect(() => {
     const auth = getAuth();
 
-    // Обработка результата редиректа
     const handleRedirectResult = async () => {
       try {
         const result = await getRedirectResult(auth);
@@ -26,11 +25,10 @@ const Profile = () => {
       }
     };
 
-    handleRedirectResult(); // Вызов функции для обработки результата редиректа
+    handleRedirectResult();
 
     const currentUser = auth.currentUser;
 
-    // Если пользователь уже аутентифицирован без редиректа
     if (currentUser) {
       setUser({
         name: currentUser.displayName || "User",
@@ -39,7 +37,7 @@ const Profile = () => {
       });
       setLoading(false);
     } else {
-      setLoading(false); // Установить загрузку в false, если нет текущего пользователя
+      setLoading(false);
     }
   }, []);
 
@@ -48,7 +46,7 @@ const Profile = () => {
     signOut(auth)
       .then(() => {
         console.log("User signed out");
-        setUser(null); // Сбрасываем состояние пользователя
+        setUser(null);
       })
       .catch((error) => {
         console.error("Error signing out:", error);

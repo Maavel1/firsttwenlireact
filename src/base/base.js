@@ -10,7 +10,6 @@ import {
   sendEmailVerification as firebaseSendEmailVerification,
 } from "firebase/auth";
 
-// Конфигурация Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBtxFcRd62UhS4IfKk7ZomPAsd_BPTUgyQ",
   authDomain: "firsttwenli-df79a.firebaseapp.com",
@@ -21,7 +20,6 @@ const firebaseConfig = {
   measurementId: "G-LWNJM51VDF",
 };
 
-// Отправка письма для подтверждения email
 export const sendVerificationEmail = (user) => {
   return firebaseSendEmailVerification(user)
     .then(() => {
@@ -32,12 +30,10 @@ export const sendVerificationEmail = (user) => {
     });
 };
 
-// Инициализация Firebase
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app); // Экспортируйте auth
+export const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
-// Регистрация нового пользователя
 export const registerUser = async (email, password) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(
@@ -54,7 +50,6 @@ export const registerUser = async (email, password) => {
   }
 };
 
-// Вход пользователя
 export const loginUser = async (email, password) => {
   try {
     const userCredential = await signInWithEmailAndPassword(
@@ -71,7 +66,6 @@ export const loginUser = async (email, password) => {
   }
 };
 
-// Выход пользователя
 export const logoutUser = async () => {
   try {
     await signOut(auth);
@@ -82,19 +76,15 @@ export const logoutUser = async () => {
   }
 };
 
-// Вход через Google
 export const loginWithGoogle = async () => {
   try {
     await signInWithPopup(auth, googleProvider);
-    // Поскольку signInWithRedirect не возвращает пользователя сразу,
-    // вам нужно будет обработать результат позже, на странице после редиректа
   } catch (error) {
     console.error("Error logging in with Google:", error.code, error.message);
     throw error;
   }
 };
 
-// Получение результата редиректа
 export const handleRedirectResult = async () => {
   try {
     const result = await getRedirectResult(auth);
