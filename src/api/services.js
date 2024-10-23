@@ -1,33 +1,37 @@
-import mongoose from "mongoose";
+import { MongoClient } from "mongodb";
 
-const connectionString =
-  "mongodb+srv://githubmaavel:FirstTwenli3225@cluster0.no35j.mongodb.net/service.servicePage?retryWrites=true&w=majority&appName=Cluster0"; // Укажите имя вашей базы данных
+const uri =
+  "mongodb+srv://githubmaavel:FirstTwenli3225@cluster0.no35j.mongodb.net/service.servicePage?retryWrites=true&w=majority&appName=Cluster0";
 
-const serviceSchema = new mongoose.Schema({
-  title: String,
-  description: String,
-  price: Number,
-  imageUrl: String,
-});
-
-const Service =
-  mongoose.models.Service || mongoose.model("Service", serviceSchema);
+const client = new MongoClient(uri);
 
 async function connectToDatabase() {
-  if (mongoose.connection.readyState === 0) {
-    await mongoose.connect(connectionString, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+  try {
+    await client.connect();
+    console.log("Подключение к базе данных установлено.");
+  } catch (error) {
+    console.error("Ошибка подключения:", error);
+    throw error;
   }
 }
 
 export default async (req, res) => {
   await connectToDatabase();
 
+  console.log("Received request:", req.method);
+
   if (req.method === "GET") {
     try {
-      const services = await Service.find({});
+      const database = client.db("service.servicePage");
+      const collection = database.collection("services");
+
+      const services = await collection.find({}).toArray();
+      console.log("Услуги:", services);
+
+      if (services.length === 0) {
+        return res.status(404).json({ message: "Услуг нет в данный момент." });
+      }
+
       res.status(200).json(services);
     } catch (error) {
       console.error("Ошибка при получении услуг:", error);

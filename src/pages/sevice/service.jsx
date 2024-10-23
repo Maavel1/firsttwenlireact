@@ -8,20 +8,18 @@ const Service = () => {
 
   useEffect(() => {
     axios
-      .get("/api/services") // Убедитесь, что вызываете правильный путь
+      .get("/api/services") // Этот путь должен быть к вашему API
       .then((response) => {
-        console.log("Response data:", response.data); // Лог для проверки
+        console.log("Response data:", response.data);
         if (Array.isArray(response.data)) {
           setServices(response.data);
         } else {
           setError("Ошибка: данные не в формате массива");
-          console.error("Received data is not an array:", response.data); // Лог для отладки
         }
         setLoading(false);
       })
       .catch((error) => {
         setError("Ошибка при загрузке данных");
-        console.error("Error fetching services:", error); // Лог для отладки
         setLoading(false);
       });
   }, []);
@@ -38,7 +36,9 @@ const Service = () => {
     <div>
       <h1>Наши Услуги</h1>
       <div>
-        {services.length > 0 ? (
+        {services.length === 0 ? (
+          <p>Услуг нет в данный момент.</p>
+        ) : (
           services.map((service) => (
             <div key={service._id}>
               <img src={service.imageUrl} alt={service.title} />
@@ -47,8 +47,6 @@ const Service = () => {
               <p>Цена: {service.price} руб.</p>
             </div>
           ))
-        ) : (
-          <p>Услуг нет в данный момент.</p>
         )}
       </div>
     </div>
