@@ -12,6 +12,7 @@ import Home from "./pages/Home/Home";
 import Authorization from "./pages/Authorization/Authorization";
 import Profile from "./pages/profile/Profile";
 import "./App.scss";
+import CreateService from "./pages/CreateService";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/service" element={<Service />} />
           <Route path="/authorization" element={<Authorization />} />
+          <Route path="/сreateService" element={<CreateService />} />
           <Route path="/profile" element={<Profile />} />{" "}
           {/* Добавьте маршрут для профиля */}
           <Route path="*" element={<Navigate to="/" replace />} />
