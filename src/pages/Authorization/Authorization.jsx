@@ -3,7 +3,6 @@ import classes from "./registration.module.scss";
 import {
   registerUser,
   loginUser,
-  logoutUser,
   loginWithGoogle,
   sendVerificationEmail,
   auth,
@@ -16,7 +15,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { ReactTyped } from "react-typed";
 import google from "../../assets/Google.svg";
 
-const Registration = () => {
+const Authorization = () => {
   const [isLogin, setIsLogin] = useState(false);
   const [error, setError] = useState("");
   const [isAnimationActive, setIsAnimationActive] = useState(false);
@@ -74,6 +73,17 @@ const Registration = () => {
     }
   };
 
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const loginParam = searchParams.get("login");
+
+    if (loginParam === "true") {
+      setIsLogin(true);
+    } else if (loginParam === "false") {
+      setIsLogin(false);
+    }
+  }, [location.search]);
+
   const toggleForm = () => {
     setIsAnimationActive(true);
     setTimeout(() => {
@@ -115,7 +125,9 @@ const Registration = () => {
           {({ handleSubmit, handleChange, values, errors }) => (
             <Form onFinish={handleSubmit} autoComplete="off">
               <h2 className={classes.titleForm}>
-                {isLogin ? "Вход" : "Регистрация"}
+                {isLogin
+                  ? "Вход в личный кабинет"
+                  : "Зарегистрируйтесь, чтобы начать"}
               </h2>
               <Form.Item
                 label="Email"
@@ -203,4 +215,4 @@ const Registration = () => {
   );
 };
 
-export default Registration;
+export default Authorization;

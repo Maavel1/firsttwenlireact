@@ -14,6 +14,7 @@
     "@hookform/resolvers": "^3.9.0",
     "@lottiefiles/react-lottie-player": "^3.5.4",
     "antd": "^5.21.5",
+    "axios": "^1.7.7",
     "firebase": "^11.0.0",
     "formik": "^2.4.6",
     "lottie-react": "^2.4.0",

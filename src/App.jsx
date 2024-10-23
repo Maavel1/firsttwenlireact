@@ -9,8 +9,8 @@ import Contact from "./pages/contact/contact";
 import Order from "./pages/order/order";
 import Service from "./pages/sevice/service";
 import Home from "./pages/Home/Home";
-import Registration from "./pages/registration/registration";
-import Profile from "./pages/profile/Profile"; // Импортируйте ваш компонент Profile
+import Authorization from "./pages/Authorization/Authorization";
+import Profile from "./pages/profile/Profile";
 import "./App.scss";
 
 function App() {
@@ -23,7 +23,7 @@ function App() {
           <Route path="/order" element={<Order />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/service" element={<Service />} />
-          <Route path="/registration" element={<Registration />} />
+          <Route path="/authorization" element={<Authorization />} />
           <Route path="/profile" element={<Profile />} />{" "}
           {/* Добавьте маршрут для профиля */}
           <Route path="*" element={<Navigate to="/" replace />} />

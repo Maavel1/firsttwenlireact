@@ -30,20 +30,33 @@ const NavBar = () => {
       </div>
       <div className={classes.linksOrderAcount}>
         {user ? (
-          <Link to="/profile" className={classes.accountLink}>
-            Профиль
-          </Link>
+          <>
+            <Link to="/profile" className={classes.accountLink}>
+              Профиль
+            </Link>
+            <Link
+              to="/order"
+              className={classes.accountLink + " " + classes.Reg}
+            >
+              Корзина
+            </Link>
+          </>
         ) : (
-          <Link
-            to="/registration"
-            className={classes.accountLink + " " + classes.Reg}
-          >
-            Регистрация
-          </Link>
+          <>
+            <Link
+              to="/authorization?login=true"
+              className={classes.accountLink + " " + classes.Reg}
+            >
+              Войти
+            </Link>
+            <Link
+              to="/authorization?login=false"
+              className={classes.accountLink + " " + classes.orderLink}
+            >
+              Регистрация
+            </Link>
+          </>
         )}
-        <Link to="/order" className={classes.orderLink}>
-          Корзина
-        </Link>
       </div>
     </header>
   );
