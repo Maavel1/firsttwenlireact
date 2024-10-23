@@ -7,6 +7,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  sendPasswordResetEmail,
   sendEmailVerification as firebaseSendEmailVerification,
 } from "firebase/auth";
 
@@ -20,6 +21,19 @@ const firebaseConfig = {
   measurementId: "G-LWNJM51VDF",
 };
 
+// Function to reset user password
+export const resetPassword = async (email) => {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    console.log("Password reset email sent.");
+  } catch (error) {
+    console.error(
+      "Error sending password reset email:",
+      getFirebaseErrorMessage(error.code)
+    );
+    throw new Error(getFirebaseErrorMessage(error.code));
+  }
+};
 export const sendVerificationEmail = (user) => {
   return firebaseSendEmailVerification(user)
     .then(() => {

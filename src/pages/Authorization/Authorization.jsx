@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom"; // Use useLocation and useSearchParams
 import classes from "./registration.module.scss";
 import {
   registerUser,
   loginUser,
   loginWithGoogle,
   sendVerificationEmail,
+  resetPassword,
   auth,
 } from "../../base/base";
-import { useNavigate } from "react-router-dom";
-import { Button, Form, Input } from "antd";
+import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import { Button, Form, Input, Flex, Checkbox } from "antd";
 import * as Yup from "yup";
 import { Formik } from "formik";
 import { onAuthStateChanged } from "firebase/auth";
@@ -16,11 +18,43 @@ import { ReactTyped } from "react-typed";
 import google from "../../assets/Google.svg";
 
 const Authorization = () => {
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
+  const [isResetPassword, setIsResetPassword] = useState(false);
   const [error, setError] = useState("");
-  const [isAnimationActive, setIsAnimationActive] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation(); // Get location
+  const [searchParams, setSearchParams] = useSearchParams(); // Initialize useSearchParams
 
+  useEffect(() => {
+    const loginParam = searchParams.get("login");
+
+    // Переключаем форму в зависимости от параметров в URL
+    if (isResetPassword) {
+      setIsLogin(false);
+      setSearchParams(); // Убираем параметры login из URL
+    } else if (loginParam === "true") {
+      setIsLogin(true);
+      setIsResetPassword(false); // Сбрасываем восстановление пароля
+    } else if (loginParam === "false") {
+      setIsLogin(false);
+      setIsResetPassword(false); // Сбрасываем восстановление пароля
+    }
+  }, [searchParams, isResetPassword]);
+
+  // Логика переключения на форму восстановления пароля
+  const toggleResetPassword = () => {
+    setIsResetPassword(true);
+    setSearchParams(); // Сбрасываем параметры ?login при переходе на восстановление пароля
+    setError(false);
+  };
+  // Логика переключения между регистрацией и входом
+  const toggleForm = () => {
+    setIsLogin(!isLogin);
+    setIsResetPassword(false);
+    setSearchParams({ login: !isLogin ? "true" : "false" }); // Переключаем URL в зависимости от состояния формы
+    setError(false);
+  };
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -35,18 +69,30 @@ const Authorization = () => {
     email: Yup.string()
       .email("Неверный формат email")
       .required("Введите ваш email!"),
-    password: Yup.string().required("Введите ваш пароль!"),
-    confirmPassword: isLogin
-      ? null
-      : Yup.string()
-          .oneOf([Yup.ref("password"), null], "Пароли не совпадают")
-          .required("Подтвердите ваш пароль!"),
+    password: !isResetPassword
+      ? Yup.string().required("Введите ваш пароль!")
+      : null,
+    confirmPassword:
+      !isLogin && !isResetPassword
+        ? Yup.string()
+            .oneOf([Yup.ref("password"), null], "Пароли не совпадают")
+            .required("Подтвердите ваш пароль!")
+        : null,
   });
 
   const handleSubmit = (values) => {
-    const { email, password } = values;
+    const { email } = values;
 
-    if (isLogin) {
+    if (isResetPassword) {
+      resetPassword(email)
+        .then(() => {
+          setError("Письмо для восстановления отправлено на ваш email.");
+          setSearchParams({ login: "true" });
+        })
+        .catch((error) => {
+          setError(`Ошибка восстановления пароля: ${error.message}`);
+        });
+    } else if (isLogin) {
       loginUser(email, password)
         .then((user) => {
           if (user.emailVerified) {
@@ -72,26 +118,10 @@ const Authorization = () => {
         });
     }
   };
-
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const loginParam = searchParams.get("login");
-
-    if (loginParam === "true") {
-      setIsLogin(true);
-    } else if (loginParam === "false") {
-      setIsLogin(false);
-    }
-  }, [location.search]);
-
-  const toggleForm = () => {
-    setIsAnimationActive(true);
-    setTimeout(() => {
-      setIsLogin(!isLogin);
-      setIsAnimationActive(false);
-    }, 500);
+  const backToLogin = () => {
+    setIsResetPassword(false);
+    setSearchParams({ login: "true" }); // Переключаем URL обратно на форму входа
   };
-
   return (
     <div className={classes.formPage}>
       <div className={classes.textMarketing}>
@@ -114,7 +144,7 @@ const Authorization = () => {
       </div>
       <div
         className={`${classes.formContainer} ${
-          isAnimationActive ? "" : classes.show
+          isAnimating ? classes.hide : classes.show
         }`}
       >
         <Formik
@@ -125,10 +155,13 @@ const Authorization = () => {
           {({ handleSubmit, handleChange, values, errors }) => (
             <Form onFinish={handleSubmit} autoComplete="off">
               <h2 className={classes.titleForm}>
-                {isLogin
+                {isResetPassword
+                  ? "Восстановление пароля"
+                  : isLogin
                   ? "Вход в личный кабинет"
                   : "Зарегистрируйтесь, чтобы начать"}
               </h2>
+
               <Form.Item
                 label="Email"
                 name="email"
@@ -139,6 +172,7 @@ const Authorization = () => {
                 className={classes.customLabel}
               >
                 <Input
+                  prefix={<MailOutlined />}
                   name="email"
                   className={classes.customInput}
                   onChange={handleChange}
@@ -146,67 +180,103 @@ const Authorization = () => {
                 />
               </Form.Item>
 
-              <Form.Item
-                label="Пароль"
-                name="password"
-                validateStatus={errors.password ? "error" : ""}
-                help={errors.password}
-                labelCol={{ span: 24 }}
-                wrapperCol={{ span: 24 }}
-                className={classes.customLabel}
-              >
-                <Input.Password
-                  name="password"
-                  className={classes.customInput}
-                  onChange={handleChange}
-                  value={values.password}
-                />
-              </Form.Item>
-
-              <div className="login">
-                {!isLogin && (
+              {!isResetPassword && (
+                <>
                   <Form.Item
-                    className={classes.customLabel}
-                    label="Подтвердите пароль"
-                    name="confirmPassword"
-                    validateStatus={errors.confirmPassword ? "error" : ""}
-                    help={errors.confirmPassword}
+                    label="Пароль"
+                    name="password"
+                    validateStatus={errors.password ? "error" : ""}
+                    help={errors.password}
                     labelCol={{ span: 24 }}
                     wrapperCol={{ span: 24 }}
+                    className={classes.customLabel}
                   >
                     <Input.Password
+                      prefix={<LockOutlined />}
+                      name="password"
                       className={classes.customInput}
-                      name="confirmPassword"
                       onChange={handleChange}
-                      value={values.confirmPassword}
+                      value={values.password}
                     />
                   </Form.Item>
-                )}
-              </div>
 
-              {error && <p style={{ color: "red" }}>{error}</p>}
+                  {!isLogin && (
+                    <Form.Item
+                      className={classes.customLabel}
+                      label="Подтвердите пароль"
+                      name="confirmPassword"
+                      validateStatus={errors.confirmPassword ? "error" : ""}
+                      help={errors.confirmPassword}
+                      labelCol={{ span: 24 }}
+                      wrapperCol={{ span: 24 }}
+                    >
+                      <Input.Password
+                        prefix={<LockOutlined />}
+                        className={classes.customInput}
+                        name="confirmPassword"
+                        onChange={handleChange}
+                        value={values.confirmPassword}
+                      />
+                    </Form.Item>
+                  )}
 
+                  {isLogin && (
+                    <Form.Item>
+                      <Flex justify="space-between" align="center">
+                        <Form.Item
+                          name="remember"
+                          valuePropName="checked"
+                          noStyle
+                        >
+                          <Checkbox>Запомнить меня</Checkbox>
+                        </Form.Item>
+                        <a onClick={toggleResetPassword}>Забыли пароль?</a>
+                      </Flex>
+                    </Form.Item>
+                  )}
+                </>
+              )}
+
+              {error && (
+                <p
+                  className={classes.notificationAuth}
+                  style={{ color: "red" }}
+                >
+                  {error}{" "}
+                  {isResetPassword && (
+                    <a type="link" onClick={toggleForm}>
+                      войти в личный кабинет
+                    </a>
+                  )}
+                </p>
+              )}
               <div className={classes.btnSubmitForm}>
                 <Form.Item>
                   <Button type="primary" htmlType="submit">
-                    {isLogin ? "Войти" : "Зарегистрироваться"}
+                    {isResetPassword
+                      ? "Восстановить пароль"
+                      : isLogin
+                      ? "Войти"
+                      : "Зарегистрироваться"}
                   </Button>
                 </Form.Item>
               </div>
-              <div className={classes.formLinks}>
-                <p>
-                  {isLogin
-                    ? "У вас еще нет аккаунта? "
-                    : "У вас уже есть аккаунт? "}
-                  <a type="link" onClick={toggleForm}>
-                    {isLogin ? "Зарегистрироваться" : "Войти"}
-                  </a>
-                </p>
-                <span className={classes.or}>ИЛИ</span>
-                <Button onClick={loginWithGoogle}>
-                  <img src={google} alt="google" /> Войти через Google
-                </Button>
-              </div>
+              {!isResetPassword && (
+                <div className={classes.formLinks}>
+                  <p>
+                    {isLogin
+                      ? "У вас еще нет аккаунта? "
+                      : "У вас уже есть аккаунт? "}
+                    <a type="link" onClick={toggleForm}>
+                      {isLogin ? "Зарегистрироваться" : "Войти"}
+                    </a>
+                  </p>
+                  <span className={classes.or}>ИЛИ</span>
+                  <Button onClick={loginWithGoogle}>
+                    <img src={google} alt="google" /> Войти через Google
+                  </Button>
+                </div>
+              )}
             </Form>
           )}
         </Formik>

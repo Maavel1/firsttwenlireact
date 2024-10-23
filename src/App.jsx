@@ -4,6 +4,7 @@ import {
   BrowserRouter as Router,
   Routes,
 } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import NavBar from "./UI/NavBar/NavBar";
 import Contact from "./pages/contact/contact";
 import Order from "./pages/order/order";
@@ -12,6 +13,7 @@ import Home from "./pages/Home/Home";
 import Authorization from "./pages/Authorization/Authorization";
 import Profile from "./pages/profile/Profile";
 import "./App.scss";
+
 import CreateService from "./pages/CreateService";
 
 function App() {
@@ -27,7 +29,6 @@ function App() {
           <Route path="/authorization" element={<Authorization />} />
           <Route path="/сreateService" element={<CreateService />} />
           <Route path="/profile" element={<Profile />} />{" "}
-          {/* Добавьте маршрут для профиля */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>

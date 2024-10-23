@@ -70,6 +70,12 @@
   color: white;
   border-radius: 26px;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  img {
+    width: 20px;
+  }
 }
 
 .orderLink:hover {
@@ -86,4 +92,9 @@
   background-color: rgba(255, 255, 255, 0.622);
   transition: all 0.3s ease;
   color: #ffffff;
+}
+
+.photoUsersNav {
+  border-radius: 50%;
+  width: 26px !important;
 }

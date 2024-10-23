@@ -2,20 +2,30 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import classes from "./NavBar.module.scss";
 import logo from "../../assets/logo.png";
-import { auth } from "../../base/base";
+import { auth } from "../../base/base"; // Импорт аутентификации Firebase
 import { onAuthStateChanged } from "firebase/auth";
 import LinkNavigation from "../LinkNavigation/LinkNavigation";
+import signupImg from "../../assets/Password.svg";
+import LoginImg from "../../assets/Login.svg";
 
 const NavBar = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null); // Перемещаем хуки внутрь компонента
   const location = useLocation();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+      if (currentUser) {
+        setUser({
+          name: currentUser.displayName || "User",
+          email: currentUser.email,
+          picture: currentUser.photoURL,
+        });
+      } else {
+        setUser(null);
+      }
     });
 
-    return () => unsubscribe();
+    return () => unsubscribe(); // Очистка подписки
   }, []);
 
   return (
@@ -32,7 +42,12 @@ const NavBar = () => {
         {user ? (
           <>
             <Link to="/profile" className={classes.accountLink}>
-              Профиль
+              <img
+                className={classes.photoUsersNav}
+                src={user.picture}
+                alt="user photo"
+              />
+              <span>{user.name}</span>
             </Link>
             <Link
               to="/order"
@@ -47,12 +62,13 @@ const NavBar = () => {
               to="/authorization?login=true"
               className={classes.accountLink + " " + classes.Reg}
             >
-              Войти
+              <img src={signupImg} alt="войти" /> Войти
             </Link>
             <Link
               to="/authorization?login=false"
               className={classes.accountLink + " " + classes.orderLink}
             >
+              <img src={LoginImg} alt="Регистрация" />
               Регистрация
             </Link>
           </>
