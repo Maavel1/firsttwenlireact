@@ -81,7 +81,7 @@ const Authorization = () => {
   });
 
   const handleSubmit = (values) => {
-    const { email } = values;
+    const { email, password } = values; // Убедитесь, что password доступен
 
     if (isResetPassword) {
       resetPassword(email)
@@ -93,7 +93,7 @@ const Authorization = () => {
           setError(`Ошибка восстановления пароля: ${error.message}`);
         });
     } else if (isLogin) {
-      loginUser(email, password)
+      loginUser(email, password) // Передавайте password только здесь
         .then((user) => {
           if (user.emailVerified) {
             navigate("/profile");
