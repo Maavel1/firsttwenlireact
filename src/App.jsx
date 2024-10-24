@@ -16,6 +16,7 @@ import "./App.scss";
 
 import CreateService from "./pages/CreateService";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
+import PhoneAuth from "./components/PhoneAuth/PhoneAuth";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/service" element={<Service />} />
           <Route path="/authorization" element={<Authorization />} />
           <Route path="/сreateService" element={<CreateService />} />
+          <Route path="/phoneAuth" element={<PhoneAuth />} />
           <Route
             path="/profile"
             element={<PrivateRoute element={<Profile />} />}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation, useSearchParams } from "react-router-dom"; // Use useLocation and useSearchParams
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import classes from "./registration.module.scss";
+import { ReactTyped } from "react-typed";
 import {
   registerUser,
   loginUser,
@@ -13,26 +14,31 @@ import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Flex, Checkbox } from "antd";
 import * as Yup from "yup";
 import { Formik } from "formik";
-import { onAuthStateChanged } from "firebase/auth";
-import { ReactTyped } from "react-typed";
+import {
+  onAuthStateChanged,
+  setPersistence,
+  browserSessionPersistence,
+  browserLocalPersistence,
+} from "firebase/auth"; // Добавляем setPersistence для управления сохранением сессии
 import google from "../../assets/Google.svg";
+import PhoneAuth from "../../components/PhoneAuth/PhoneAuth";
 
 const Authorization = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isResetPassword, setIsResetPassword] = useState(false);
   const [error, setError] = useState("");
   const [isAnimating, setIsAnimating] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false); // Moved inside the component
-  const [email, setEmail] = useState(localStorage.getItem("userEmail") || ""); // Moved inside the component
+  const [rememberMe, setRememberMe] = useState(false); // Управляем "Запомнить меня"
+  const [email, setEmail] = useState(localStorage.getItem("userEmail") || ""); // Сохраняем email
 
   const navigate = useNavigate();
   const location = useLocation(); // Get location
   const [searchParams, setSearchParams] = useSearchParams(); // Initialize useSearchParams
 
+  // Переключение между формами в зависимости от параметров URL
   useEffect(() => {
     const loginParam = searchParams.get("login");
 
-    // Переключаем форму в зависимости от параметров в URL
     if (isResetPassword) {
       setIsLogin(false);
       setSearchParams(); // Убираем параметры login из URL
@@ -45,31 +51,35 @@ const Authorization = () => {
     }
   }, [searchParams, isResetPassword]);
 
-  // Логика переключения на форму восстановления пароля
+  // Логика для восстановления пароля
   const toggleResetPassword = () => {
     setIsResetPassword(true);
-    setSearchParams(); // Сбрасываем параметры ?login при переходе на восстановление пароля
+    setSearchParams(); // Сбрасываем параметры ?login
     setError(false);
   };
 
-  // Логика переключения между регистрацией и входом
+  // Логика переключения между формами входа/регистрации
   const toggleForm = () => {
     setIsLogin(!isLogin);
     setIsResetPassword(false);
-    setSearchParams({ login: !isLogin ? "true" : "false" }); // Переключаем URL в зависимости от состояния формы
+    setSearchParams({ login: !isLogin ? "true" : "false" }); // Меняем URL
     setError(false);
   };
 
+  // Отслеживание состояния аутентификации и автоматический редирект на профиль
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
+      if (user && user.emailVerified) {
         navigate("/profile");
+      } else if (user && !user.emailVerified) {
+        setError("Пожалуйста, подтвердите ваш email перед входом.");
       }
     });
 
     return () => unsubscribe();
   }, [navigate]);
 
+  // Валидация формы
   const validationSchema = Yup.object().shape({
     email: Yup.string()
       .email("Неверный формат email")
@@ -85,9 +95,11 @@ const Authorization = () => {
         : null,
   });
 
+  // Обработка отправки формы
   const handleSubmit = (values) => {
-    const { email, password } = values; // Убедитесь, что password доступен
+    const { email, password } = values;
 
+    // Логика восстановления пароля
     if (isResetPassword) {
       resetPassword(email)
         .then(() => {
@@ -98,7 +110,14 @@ const Authorization = () => {
           setError(`Ошибка восстановления пароля: ${error.message}`);
         });
     } else if (isLogin) {
-      loginUser(email, password) // Передавайте password только здесь
+      // Логика входа
+      setPersistence(
+        auth,
+        rememberMe ? browserLocalPersistence : browserSessionPersistence
+      ) // Выбор сессии
+        .then(() => {
+          return loginUser(email, password); // Выполняем вход
+        })
         .then((user) => {
           if (user.emailVerified) {
             if (rememberMe) {
@@ -115,9 +134,10 @@ const Authorization = () => {
           setError(`Ошибка входа: ${error.message}`);
         });
     } else {
+      // Логика регистрации
       registerUser(email, password)
         .then((user) => {
-          sendVerificationEmail(user);
+          sendVerificationEmail(user); // Отправляем письмо с подтверждением
           setError("Регистрация успешна! Проверьте почту для подтверждения.");
           setTimeout(() => {
             navigate("/profile");
@@ -131,7 +151,7 @@ const Authorization = () => {
 
   const backToLogin = () => {
     setIsResetPassword(false);
-    setSearchParams({ login: "true" }); // Переключаем URL обратно на форму входа
+    setSearchParams({ login: "true" });
   };
 
   return (
@@ -259,9 +279,10 @@ const Authorization = () => {
                   className={classes.notificationAuth}
                   style={{ color: "red" }}
                 >
-                  {error}{" "}
+                  {error}
                   {isResetPassword && (
                     <a type="link" onClick={toggleForm}>
+                      {" "}
                       войти в личный кабинет
                     </a>
                   )}
