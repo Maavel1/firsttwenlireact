@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getAuth, signOut, getRedirectResult } from "firebase/auth";
+import DefaultAvatar from "../../assets/defualt-avatar.png";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -62,7 +63,10 @@ const Profile = () => {
       {user ? (
         <>
           <h2>Welcome, {user.name}</h2>
-          <img src={user.picture} alt={user.name} />
+          <img
+            src={user.picture ? user.picture : DefaultAvatar}
+            alt={user.name}
+          />
           <p>Email: {user.email}</p>
           <button onClick={handleLogout}>Logout</button>
         </>

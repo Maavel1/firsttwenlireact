@@ -7,7 +7,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import LinkNavigation from "../LinkNavigation/LinkNavigation";
 import signupImg from "../../assets/Password.svg";
 import LoginImg from "../../assets/Login.svg";
-
+import DefaultAvatar from "../../assets/defualt-avatar.png";
 const NavBar = () => {
   const [user, setUser] = useState(null); // Перемещаем хуки внутрь компонента
   const location = useLocation();
@@ -44,7 +44,7 @@ const NavBar = () => {
             <Link to="/profile" className={classes.accountLink}>
               <img
                 className={classes.photoUsersNav}
-                src={user.picture}
+                src={user.picture ? user.picture : DefaultAvatar}
                 alt="user photo"
               />
               <span>{user.name}</span>
