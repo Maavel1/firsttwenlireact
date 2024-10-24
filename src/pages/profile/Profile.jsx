@@ -52,8 +52,8 @@ const Profile = () => {
     const auth = getAuth();
     signOut(auth)
       .then(() => {
-        console.log("User signed out");
         setUser(null);
+        navigate("/");
       })
       .catch((error) => {
         console.error("Error signing out:", error);

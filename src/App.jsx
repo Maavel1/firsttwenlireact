@@ -15,6 +15,7 @@ import Profile from "./pages/profile/Profile";
 import "./App.scss";
 
 import CreateService from "./pages/CreateService";
+import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 
 function App() {
   return (
@@ -28,7 +29,10 @@ function App() {
           <Route path="/service" element={<Service />} />
           <Route path="/authorization" element={<Authorization />} />
           <Route path="/сreateService" element={<CreateService />} />
-          <Route path="/profile" element={<Profile />} />{" "}
+          <Route
+            path="/profile"
+            element={<PrivateRoute element={<Profile />} />}
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>

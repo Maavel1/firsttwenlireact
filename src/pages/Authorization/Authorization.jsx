@@ -22,6 +22,9 @@ const Authorization = () => {
   const [isResetPassword, setIsResetPassword] = useState(false);
   const [error, setError] = useState("");
   const [isAnimating, setIsAnimating] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false); // Moved inside the component
+  const [email, setEmail] = useState(localStorage.getItem("userEmail") || ""); // Moved inside the component
+
   const navigate = useNavigate();
   const location = useLocation(); // Get location
   const [searchParams, setSearchParams] = useSearchParams(); // Initialize useSearchParams
@@ -48,6 +51,7 @@ const Authorization = () => {
     setSearchParams(); // Сбрасываем параметры ?login при переходе на восстановление пароля
     setError(false);
   };
+
   // Логика переключения между регистрацией и входом
   const toggleForm = () => {
     setIsLogin(!isLogin);
@@ -55,6 +59,7 @@ const Authorization = () => {
     setSearchParams({ login: !isLogin ? "true" : "false" }); // Переключаем URL в зависимости от состояния формы
     setError(false);
   };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -96,6 +101,11 @@ const Authorization = () => {
       loginUser(email, password) // Передавайте password только здесь
         .then((user) => {
           if (user.emailVerified) {
+            if (rememberMe) {
+              localStorage.setItem("userEmail", email);
+            } else {
+              localStorage.removeItem("userEmail");
+            }
             navigate("/profile");
           } else {
             setError("Email не подтвержден. Пожалуйста, проверьте почту.");
@@ -118,10 +128,12 @@ const Authorization = () => {
         });
     }
   };
+
   const backToLogin = () => {
     setIsResetPassword(false);
     setSearchParams({ login: "true" }); // Переключаем URL обратно на форму входа
   };
+
   return (
     <div className={classes.formPage}>
       <div className={classes.textMarketing}>
@@ -148,7 +160,7 @@ const Authorization = () => {
         }`}
       >
         <Formik
-          initialValues={{ email: "", password: "", confirmPassword: "" }}
+          initialValues={{ email, password: "", confirmPassword: "" }}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
@@ -228,7 +240,12 @@ const Authorization = () => {
                           valuePropName="checked"
                           noStyle
                         >
-                          <Checkbox>Запомнить меня</Checkbox>
+                          <Checkbox
+                            checked={rememberMe}
+                            onChange={(e) => setRememberMe(e.target.checked)}
+                          >
+                            Запомнить меня
+                          </Checkbox>
                         </Form.Item>
                         <a onClick={toggleResetPassword}>Забыли пароль?</a>
                       </Flex>
