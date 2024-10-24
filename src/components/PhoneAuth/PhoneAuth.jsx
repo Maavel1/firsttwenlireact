@@ -1,87 +1,144 @@
-import { useState, useEffect } from "react";
-import { auth } from "../../base/base"; // Firebase инициализация
+import { BsFillShieldLockFill, BsTelephoneFill } from "react-icons/bs";
+import { CgSpinner } from "react-icons/cg";
+
+import OtpInput from "otp-input-react";
+import { useState } from "react";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import { auth } from "./firebase.config";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
-import { Button, Input } from "antd";
+import { toast, Toaster } from "react-hot-toast";
 
 const PhoneAuth = () => {
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [verificationCode, setVerificationCode] = useState("");
-  const [confirmationResult, setConfirmationResult] = useState(null);
-  const [error, setError] = useState("");
+  const [otp, setOtp] = useState("");
+  const [ph, setPh] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showOTP, setShowOTP] = useState(false);
+  const [user, setUser] = useState(null);
 
-  // Функция для настройки reCAPTCHA
-  const setupRecaptcha = () => {
+  function onCaptchVerify() {
     if (!window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(
         "recaptcha-container",
         {
-          size: "invisible", // Измените на "normal", если хотите показать реCAPTCHA
+          size: "invisible",
           callback: (response) => {
-            console.log("reCAPTCHA пройдено");
+            onSignup();
           },
-          appVerificationDisabledForTesting: true, // Для тестирования
+          "expired-callback": () => {},
         },
         auth
       );
     }
-  };
+  }
 
-  // Отправка SMS с кодом подтверждения
-  const sendSMSCode = () => {
-    setupRecaptcha(); // Настройка reCAPTCHA
+  function onSignup() {
+    setLoading(true);
+    onCaptchVerify();
+
     const appVerifier = window.recaptchaVerifier;
 
-    signInWithPhoneNumber(auth, phoneNumber, appVerifier)
+    const formatPh = "+" + ph;
+
+    signInWithPhoneNumber(auth, formatPh, appVerifier)
       .then((confirmationResult) => {
-        setConfirmationResult(confirmationResult);
-        console.log("SMS отправлено");
+        window.confirmationResult = confirmationResult;
+        setLoading(false);
+        setShowOTP(true);
+        toast.success("OTP sended successfully!");
       })
       .catch((error) => {
-        setError(`Ошибка отправки SMS: ${error.message}`);
+        console.log(error);
+        setLoading(false);
       });
-  };
+  }
 
-  // Подтверждение кода из SMS
-  const verifyCode = () => {
-    if (confirmationResult) {
-      confirmationResult
-        .confirm(verificationCode)
-        .then((result) => {
-          console.log("Пользователь успешно аутентифицирован", result.user);
-          // Логика редиректа на профиль или другую страницу
-        })
-        .catch((error) => {
-          setError(`Неверный код подтверждения: ${error.message}`);
-        });
-    }
-  };
+  function onOTPVerify() {
+    setLoading(true);
+    window.confirmationResult
+      .confirm(otp)
+      .then(async (res) => {
+        console.log(res);
+        setUser(res.user);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+  }
 
   return (
-    <div>
-      <h2>Авторизация по номеру телефона</h2>
-      <div id="recaptcha-container"></div>
-
-      {confirmationResult ? (
-        <>
-          <Input
-            placeholder="Введите код из SMS"
-            value={verificationCode}
-            onChange={(e) => setVerificationCode(e.target.value)}
-          />
-          <Button onClick={verifyCode}>Подтвердить код</Button>
-        </>
-      ) : (
-        <>
-          <Input
-            placeholder="Введите номер телефона"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-          />
-          <Button onClick={sendSMSCode}>Отправить код</Button>
-        </>
-      )}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-    </div>
+    <section className="bg-emerald-500 flex items-center justify-center h-screen">
+      <div>
+        <Toaster toastOptions={{ duration: 4000 }} />
+        <div id="recaptcha-container"></div>
+        {user ? (
+          <h2 className="text-center text-white font-medium text-2xl">
+            👍Login Success
+          </h2>
+        ) : (
+          <div className="w-80 flex flex-col gap-4 rounded-lg p-4">
+            <h1 className="text-center leading-normal text-white font-medium text-3xl mb-6">
+              Welcome to <br /> CODE A PROGRAM
+            </h1>
+            {showOTP ? (
+              <>
+                <div className="bg-white text-emerald-500 w-fit mx-auto p-4 rounded-full">
+                  <BsFillShieldLockFill size={30} />
+                </div>
+                <label
+                  htmlFor="otp"
+                  className="font-bold text-xl text-white text-center"
+                >
+                  Enter your OTP
+                </label>
+                <OtpInput
+                  value={otp}
+                  onChange={setOtp}
+                  OTPLength={6}
+                  otpType="number"
+                  disabled={false}
+                  autoFocus
+                  className="opt-container "
+                ></OtpInput>
+                <button
+                  onClick={onOTPVerify}
+                  className="bg-emerald-600 w-full flex gap-1 items-center justify-center py-2.5 text-white rounded"
+                >
+                  {loading && (
+                    <CgSpinner size={20} className="mt-1 animate-spin" />
+                  )}
+                  <span>Verify OTP</span>
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="bg-white text-emerald-500 w-fit mx-auto p-4 rounded-full">
+                  <BsTelephoneFill size={30} />
+                </div>
+                <label
+                  htmlFor=""
+                  className="font-bold text-xl text-white text-center"
+                >
+                  Verify your phone number
+                </label>
+                <PhoneInput country={"in"} value={ph} onChange={setPh} />
+                <button
+                  onClick={onSignup}
+                  className="bg-emerald-600 w-full flex gap-1 items-center justify-center py-2.5 text-white rounded"
+                >
+                  {loading && (
+                    <CgSpinner size={20} className="mt-1 animate-spin" />
+                  )}
+                  <span>Send code via SMS</span>
+                </button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    </section>
   );
 };
 
