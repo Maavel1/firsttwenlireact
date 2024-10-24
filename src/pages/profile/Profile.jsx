@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { getAuth, signOut, getRedirectResult } from "firebase/auth";
+import {
+  getAuth,
+  signOut,
+  onAuthStateChanged,
+  getRedirectResult,
+} from "firebase/auth";
 import DefaultAvatar from "../../assets/defualt-avatar.png";
+import Loader from "../../UI/Loader/loader";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -21,25 +27,25 @@ const Profile = () => {
         }
       } catch (error) {
         console.error("Error getting redirect result:", error);
-      } finally {
-        setLoading(false);
       }
     };
 
     handleRedirectResult();
 
-    const currentUser = auth.currentUser;
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser({
+          name: currentUser.displayName || "User",
+          email: currentUser.email,
+          picture: currentUser.photoURL,
+        });
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
 
-    if (currentUser) {
-      setUser({
-        name: currentUser.displayName || "User",
-        email: currentUser.email,
-        picture: currentUser.photoURL,
-      });
-      setLoading(false);
-    } else {
-      setLoading(false);
-    }
+    return () => unsubscribe(); // Отписка от слушателя при размонтировании компонента
   }, []);
 
   const handleLogout = () => {
@@ -55,7 +61,7 @@ const Profile = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loader />;
   }
 
   return (

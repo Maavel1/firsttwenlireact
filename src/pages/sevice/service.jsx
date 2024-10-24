@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
+import Loader from "../../UI/Loader/loader";
 
 const Service = () => {
   const [services, setServices] = useState([]); // Измените "movies" на "services"
@@ -27,7 +28,7 @@ const Service = () => {
   }, []);
 
   if (loading) {
-    return <p>Загрузка...</p>;
+    return <Loader />;
   }
 
   if (error) {
