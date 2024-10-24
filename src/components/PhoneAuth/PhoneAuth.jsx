@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { auth } from "../../base/base"; // Firebase инициализация
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { Button, Input } from "antd";
@@ -15,10 +15,11 @@ const PhoneAuth = () => {
       window.recaptchaVerifier = new RecaptchaVerifier(
         "recaptcha-container",
         {
-          size: "invisible",
+          size: "invisible", // Измените на "normal", если хотите показать реCAPTCHA
           callback: (response) => {
             console.log("reCAPTCHA пройдено");
           },
+          appVerificationDisabledForTesting: true, // Для тестирования
         },
         auth
       );
@@ -27,8 +28,9 @@ const PhoneAuth = () => {
 
   // Отправка SMS с кодом подтверждения
   const sendSMSCode = () => {
-    setupRecaptcha();
+    setupRecaptcha(); // Настройка reCAPTCHA
     const appVerifier = window.recaptchaVerifier;
+
     signInWithPhoneNumber(auth, phoneNumber, appVerifier)
       .then((confirmationResult) => {
         setConfirmationResult(confirmationResult);
@@ -46,7 +48,7 @@ const PhoneAuth = () => {
         .confirm(verificationCode)
         .then((result) => {
           console.log("Пользователь успешно аутентифицирован", result.user);
-          // Логика редиректа на профиль
+          // Логика редиректа на профиль или другую страницу
         })
         .catch((error) => {
           setError(`Неверный код подтверждения: ${error.message}`);
