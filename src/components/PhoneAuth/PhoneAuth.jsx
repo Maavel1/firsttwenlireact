@@ -1,6 +1,6 @@
+// PhoneAuth.jsx
 import { BsFillShieldLockFill, BsTelephoneFill } from "react-icons/bs";
 import { CgSpinner } from "react-icons/cg";
-
 import OtpInput from "otp-input-react";
 import { useState } from "react";
 import PhoneInput from "react-phone-input-2";
@@ -37,7 +37,6 @@ const PhoneAuth = () => {
     onCaptchVerify();
 
     const appVerifier = window.recaptchaVerifier;
-
     const formatPh = "+" + ph;
 
     signInWithPhoneNumber(auth, formatPh, appVerifier)
@@ -121,7 +120,7 @@ const PhoneAuth = () => {
                   htmlFor=""
                   className="font-bold text-xl text-white text-center"
                 >
-                  Verify your phone number
+                  Verify your phone numberкк
                 </label>
                 <PhoneInput country={"in"} value={ph} onChange={setPh} />
                 <button
