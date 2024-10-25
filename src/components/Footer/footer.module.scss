@@ -1,0 +1,30 @@
+.footer {
+  width: 100%;
+  padding: 15px 0px 0px 0px;
+  border-top: 1px solid #5454546e;
+  background-color: #0000003b;
+}
+
+.footerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logoFooter {
+  img {
+    max-width: 132px;
+  }
+}
+
+.Author {
+  h3 {
+    font-size: 14px;
+    font-weight: 400;
+  }
+}
+
+.Social {
+  display: flex;
+  gap: 14px;
+}

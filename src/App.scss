@@ -17,3 +17,10 @@ a {
   max-width: 1300px;
   margin: 0 auto;
 }
+
+.rows-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 104vh;
+}

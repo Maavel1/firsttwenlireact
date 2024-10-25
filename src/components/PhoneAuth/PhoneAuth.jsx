@@ -1,6 +1,6 @@
-// PhoneAuth.jsx
 import { BsFillShieldLockFill, BsTelephoneFill } from "react-icons/bs";
 import { CgSpinner } from "react-icons/cg";
+
 import OtpInput from "otp-input-react";
 import { useState } from "react";
 import PhoneInput from "react-phone-input-2";
@@ -16,27 +16,36 @@ const PhoneAuth = () => {
   const [showOTP, setShowOTP] = useState(false);
   const [user, setUser] = useState(null);
 
+  // Функция для инициализации reCAPTCHA
   function onCaptchVerify() {
     if (!window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(
-        "recaptcha-container",
+        "recaptcha-container", // контейнер для видимой reCAPTCHA
         {
-          size: "invisible",
+          size: "normal", // Видимая капча
           callback: (response) => {
-            onSignup();
+            // reCAPTCHA решена, можно отправить номер телефона
+            console.log("Captcha solved!");
           },
-          "expired-callback": () => {},
+          "expired-callback": () => {
+            // reCAPTCHA истекла, нужно перезапустить
+            alert("reCAPTCHA expired, please try again.");
+          },
         },
         auth
       );
+      // Вызов рендера капчи
+      window.recaptchaVerifier.render();
     }
   }
 
+  // Функция для отправки кода OTP
   function onSignup() {
     setLoading(true);
-    onCaptchVerify();
+    onCaptchVerify(); // Инициализируем капчу перед отправкой
 
     const appVerifier = window.recaptchaVerifier;
+
     const formatPh = "+" + ph;
 
     signInWithPhoneNumber(auth, formatPh, appVerifier)
@@ -44,7 +53,7 @@ const PhoneAuth = () => {
         window.confirmationResult = confirmationResult;
         setLoading(false);
         setShowOTP(true);
-        toast.success("OTP sended successfully!");
+        toast.success("OTP отправлен успешно!");
       })
       .catch((error) => {
         console.log(error);
@@ -52,6 +61,7 @@ const PhoneAuth = () => {
       });
   }
 
+  // Функция для проверки OTP
   function onOTPVerify() {
     setLoading(true);
     window.confirmationResult
@@ -74,12 +84,12 @@ const PhoneAuth = () => {
         <div id="recaptcha-container"></div>
         {user ? (
           <h2 className="text-center text-white font-medium text-2xl">
-            👍Login Success
+            👍 Вход выполнен успешно
           </h2>
         ) : (
           <div className="w-80 flex flex-col gap-4 rounded-lg p-4">
             <h1 className="text-center leading-normal text-white font-medium text-3xl mb-6">
-              Welcome to <br /> CODE A PROGRAM
+              Добро пожаловать в <br /> CODE A PROGRAM
             </h1>
             {showOTP ? (
               <>
@@ -90,7 +100,7 @@ const PhoneAuth = () => {
                   htmlFor="otp"
                   className="font-bold text-xl text-white text-center"
                 >
-                  Enter your OTP
+                  Введите ваш OTP
                 </label>
                 <OtpInput
                   value={otp}
@@ -108,7 +118,7 @@ const PhoneAuth = () => {
                   {loading && (
                     <CgSpinner size={20} className="mt-1 animate-spin" />
                   )}
-                  <span>Verify OTP</span>
+                  <span>Проверить OTP</span>
                 </button>
               </>
             ) : (
@@ -120,7 +130,7 @@ const PhoneAuth = () => {
                   htmlFor=""
                   className="font-bold text-xl text-white text-center"
                 >
-                  Verify your phone numberкк
+                  Подтвердите ваш номер телефона
                 </label>
                 <PhoneInput country={"in"} value={ph} onChange={setPh} />
                 <button
@@ -130,7 +140,7 @@ const PhoneAuth = () => {
                   {loading && (
                     <CgSpinner size={20} className="mt-1 animate-spin" />
                   )}
-                  <span>Send code via SMS</span>
+                  <span>Отправить код через SMS</span>
                 </button>
               </>
             )}

@@ -7,6 +7,10 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
 }
 
 a {
@@ -42,8 +46,8 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {S
-  a:hover {
+@media (prefers-color-scheme: light) {
+  S a:hover {
     color: #747bff;
   }
   button {

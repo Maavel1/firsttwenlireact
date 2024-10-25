@@ -18,6 +18,25 @@
   flex: 0 0 30%;
 }
 
+.titleFormResetPass {
+  position: relative;
+  img {
+    position: absolute;
+    width: 35px;
+    height: 35px;
+    left: 0;
+    cursor: pointer;
+    border-radius: 25px;
+    padding: 6px;
+    top: 0px;
+    transition: all 0.3s ease;
+  }
+
+  img:hover {
+    background-color: rgb(144 84 248 / 43%);
+    transition: all 0.3s ease;
+  }
+}
 .customInput {
   font-size: 16px;
   padding: 9px;
@@ -56,13 +75,25 @@
 }
 
 .formContainer {
-  transition: all 0.5s ease;
+  transition: all 0.4s ease;
   opacity: 0;
   transform: translateY(20px);
+
   &.show {
     opacity: 1;
     transform: translateY(0);
   }
+
+  &.hide {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+.rememBer_ResetPass_Flex {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 .notificationAuth {
