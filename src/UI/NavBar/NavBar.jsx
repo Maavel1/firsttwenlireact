@@ -4,6 +4,7 @@ import classes from "./NavBar.module.scss";
 import logo from "../../assets/logo.png";
 import LinkNavigation from "../LinkNavigation/LinkNavigation";
 import AuthButtons from "../../components/authButton/AuthButtons"; // Импорт компонента с кнопками
+import FirebaseImage from "../../components/FirebaseImage/FirebaseImage";
 
 const NavBar = () => {
   return (
@@ -11,7 +12,11 @@ const NavBar = () => {
       <div className="logo-header">
         <LinkNavigation to="/">
           {" "}
-          <img className={classes.logo} src={logo} alt="logo" />
+          <FirebaseImage
+            imageName="logo.png"
+            alt="Logo"
+            className={classes.logo}
+          />
         </LinkNavigation>
       </div>
       <div className={classes.linksHeader}>
@@ -20,7 +25,7 @@ const NavBar = () => {
         <LinkNavigation to="/contact">О нас</LinkNavigation>
       </div>
       <div className={classes.linksOrderAcount}>
-        <AuthButtons /> {/* Вставляем кнопки авторизации и профиля */}
+        <AuthButtons />
       </div>
     </header>
   );

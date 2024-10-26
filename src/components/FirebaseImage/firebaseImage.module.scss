@@ -1,0 +1,7 @@
+.customSkeleton :global(.ant-skeleton-avatar) {
+  background-color: #4b4b4b !important;
+}
+
+.customSkeleton :global(.ant-skeleton-avatar::after) {
+  background-color: #ffffff !important;
+}

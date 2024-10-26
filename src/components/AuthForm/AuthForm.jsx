@@ -8,6 +8,7 @@ import google from "../../assets/Google.svg";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import arrow from "../../assets/arrow-u-up-left-svgrepo-com.svg";
 import LinkNavigation from "../../UI/LinkNavigation/LinkNavigation";
+import FirebaseImageByName from "../FirebaseImage/FirebaseImage";
 
 const AuthForm = ({
   initialValues = { email: "", password: "", confirmPassword: "" },
@@ -35,7 +36,10 @@ const AuthForm = ({
               <div className={classes.titleFormResetPass}>
                 <a type="link" onClick={toggleForm}>
                   {" "}
-                  <img src={arrow} alt="circled-left-2" />
+                  <FirebaseImageByName
+                    imageName="arrow-u-up-left-svgrepo-com.svg"
+                    alt="arrow"
+                  />
                 </a>
                 Восстановление пароля
               </div>
@@ -162,7 +166,8 @@ const AuthForm = ({
               </p>
               <span className={classes.or}>ИЛИ</span>
               <Button onClick={loginWithGoogle}>
-                <img src={google} alt="google" /> Войти через Google
+                <FirebaseImageByName imageName="Google.svg" alt="google" />{" "}
+                Войти через Google
               </Button>
             </div>
           )}

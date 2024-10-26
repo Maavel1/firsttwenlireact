@@ -7,6 +7,7 @@ import signupImg from "../../assets/Password.svg";
 import LoginImg from "../../assets/Login.svg";
 import DefaultAvatar from "../../assets/defualt-avatar.png";
 import { Skeleton } from "antd"; // Импорт Skeleton из antd
+import FirebaseImageByName from "../FirebaseImage/FirebaseImage";
 
 const AuthButtons = () => {
   const [user, setUser] = useState(null); // Состояние пользователя
@@ -61,13 +62,13 @@ const AuthButtons = () => {
             to="/authorization?login=true"
             className={classes.accountLink + " " + classes.Reg}
           >
-            <img src={signupImg} alt="войти" /> Войти
+            <FirebaseImageByName imageName="Password.svg" alt="sign" /> Войти
           </Link>
           <Link
             to="/authorization?login=false"
             className={classes.accountLink + " " + classes.orderLink}
           >
-            <img src={LoginImg} alt="Регистрация" />
+            <FirebaseImageByName imageName="Login.svg" alt="log in" />
             Регистрация
           </Link>
         </>

@@ -1,0 +1,86 @@
+.sliderFireAct {
+  text-align: center;
+  font-size: 18px;
+  background: #373737;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 70px;
+  border-radius: 40px;
+}
+
+.serviceContainer {
+  padding: 50px 0px;
+}
+
+.slick-slider,
+.slick-initialized,
+.slick-list {
+  border-radius: 40px;
+}
+
+.rowsSlide {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+}
+
+.infoProductSlide {
+  text-align: left;
+  color: white;
+  max-width: 496px;
+
+  h2 {
+    font-weight: bold;
+    font-size: 45px;
+    margin-bottom: 38px;
+  }
+
+  h3 {
+    font-weight: 300;
+    font-size: 20px;
+  }
+}
+
+.infoProductSlide,
+.imgSlide {
+  flex: 1;
+  width: 50%;
+  box-sizing: border-box;
+  max-width: 50%;
+}
+
+.priceAndBtn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 35px;
+
+  h3 {
+    font-size: 36px;
+    font-weight: 400;
+  }
+}
+
+.BtnOrder {
+  background-color: black;
+  padding: 50px;
+}
+
+.categuryAndRating {
+  display: flex;
+  gap: 50px;
+  align-items: center;
+  margin-top: 25px;
+
+  p {
+    display: flex;
+    align-items: self-end;
+    gap: 10px;
+    font-size: 18px;
+    color: #9054f8;
+    span {
+      color: white;
+    }
+  }
+}

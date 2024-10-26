@@ -10,6 +10,7 @@ import {
   RecaptchaVerifier,
   signInWithPhoneNumber,
 } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 // Функция для обработки сообщений об ошибках
 const getErrorMessage = (error) => {
@@ -49,7 +50,7 @@ const firebaseConfig = {
 // Инициализация Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-
+export const db = getFirestore(app);
 // Инициализация провайдера Google
 const googleProvider = new GoogleAuthProvider();
 
