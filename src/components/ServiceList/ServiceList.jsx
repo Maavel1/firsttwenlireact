@@ -3,7 +3,7 @@ import { db } from "../../base/base";
 import { collection, getDocs } from "firebase/firestore";
 import { Select } from "antd";
 import { motion, AnimatePresence } from "framer-motion"; // Импортируем Framer Motion
-import clasess from "./serviceList.module.scss";
+import clasess from "./serviceListCard.module.scss";
 import Loader from "../../UI/Loader/loader";
 
 const ServiceList = () => {
