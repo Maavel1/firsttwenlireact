@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { message, Modal } from "antd";
 import clasess from "./ByButton.module.scss";
+import { useNavigate } from "react-router-dom";
 
 const { confirm } = Modal;
 
 export default function ByuButton({ isAuthorized, item }) {
   const [isCartUpdated, setIsCartUpdated] = useState(false); // Состояние для отслеживания обновления корзины
+  const navigate = useNavigate(); // Инициализируем navigate
 
   const handleClick = () => {
     if (!isAuthorized) {
@@ -14,7 +16,7 @@ export default function ByuButton({ isAuthorized, item }) {
         content: "Сначала авторизуйтесь, чтобы сделать заказ.",
         onOk() {
           message.info("Перенаправление на страницу входа...");
-          // Здесь можно добавить навигацию на страницу входа, если нужно
+          navigate("/profile"); // Используем navigate для перенаправления
         },
         onCancel() {
           console.log("Отмена");
