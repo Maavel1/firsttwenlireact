@@ -9,7 +9,8 @@ import DefaultAvatar from "../../assets/defualt-avatar.png";
 import { Skeleton } from "antd"; // Импорт Skeleton из antd
 import FirebaseImageByName from "../FirebaseImage/FirebaseImage";
 
-const AuthButtons = () => {
+const AuthButtons = ({ cart }) => {
+  // Принимаем cart как пропс
   const [user, setUser] = useState(null); // Состояние пользователя
   const [loading, setLoading] = useState(true); // Состояние загрузки
 
@@ -52,7 +53,11 @@ const AuthButtons = () => {
             />
             <span>{user.name}</span>
           </Link>
-          <Link to="/order" className={classes.accountLink + " " + classes.Reg}>
+          <Link
+            to="/order"
+            state={{ cart }} // Передаем корзину в состоянии
+            className={`${classes.accountLink} ${classes.Reg}`}
+          >
             Корзина
           </Link>
         </>
@@ -60,13 +65,13 @@ const AuthButtons = () => {
         <>
           <Link
             to="/authorization?login=true"
-            className={classes.accountLink + " " + classes.Reg}
+            className={`${classes.accountLink} ${classes.Reg}`}
           >
             <FirebaseImageByName imageName="Password.svg" alt="sign" /> Войти
           </Link>
           <Link
             to="/authorization?login=false"
-            className={classes.accountLink + " " + classes.orderLink}
+            className={`${classes.accountLink} ${classes.orderLink}`}
           >
             <FirebaseImageByName imageName="Login.svg" alt="log in" />
             Регистрация

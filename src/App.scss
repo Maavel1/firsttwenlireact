@@ -13,6 +13,52 @@ a {
   text-decoration: none;
 }
 
+.slick-dots li button:before {
+  color: rgb(117, 117, 117);
+}
+
+.slick-dots li.slick-active button:before {
+  opacity: 0.75;
+  color: rgb(255, 255, 255);
+}
+
+.slick-dots li.slick-active button:before {
+  opacity: 0.75;
+  color: rgb(255, 255, 255);
+}
+.slick-prev:before {
+  display: none;
+}
+
+.slick-next {
+  img {
+    font-size: 30px;
+    background-color: #373737;
+    padding: 12px 11px;
+    border-radius: 50%;
+    color: #ffffff !important;
+    transition: all 0.3s ease;
+  }
+
+  img:hover {
+    background-color: #505050;
+    transition: all 0.3s ease;
+  }
+}
+
+.ant-select-selection-placeholder {
+  color: #6c6c6c !important;
+}
+
+.slick-prev:before,
+.slick-next:before {
+  content: "";
+}
+
+.react-loading-skeleton {
+  --base-color: #9f9f9f;
+}
+
 .container {
   max-width: 1300px;
   margin: 0 auto;

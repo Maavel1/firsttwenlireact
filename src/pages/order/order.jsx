@@ -1,68 +1,55 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-export default function order() {
-  const [services, setServices] = useState([]);
-  const [bonusPoints, setBonusPoints] = useState(100); // Пример начального количества бонусов
-  const [selectedBonus, setSelectedBonus] = useState(0);
+const Order = () => {
+  const [cart, setCart] = useState([]);
 
-  // Пример услуги
-  const exampleService = {
-    id: 1,
-    name: "Услуга 1",
-    price: 50,
+  useEffect(() => {
+    // Загружаем корзину из локального хранилища при первом рендере
+    const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
+    setCart(storedCart);
+  }, []);
+
+  const totalPrice = cart.reduce((acc, item) => {
+    // Проверяем наличие item и price перед добавлением
+    return acc + (item?.price || 0); // Если item равен null или price не определено, добавляем 0
+  }, 0);
+
+  const removeItem = (id) => {
+    // Удаляем товар из корзины
+    const updatedCart = cart.filter((item) => item && item.id !== id); // Проверяем item на null
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart)); // Сохраняем обновлённую корзину в локальном хранилище
   };
 
-  const addService = () => {
-    setServices([...services, exampleService]);
-  };
-
-  const removeService = (id) => {
-    setServices(services.filter((service) => service.id !== id));
-  };
-
-  const totalCost = services.reduce(
-    (total, service) => total + service.price,
-    0
-  );
-  const finalCost = totalCost - selectedBonus;
-
-  const handleBonusChange = (e) => {
-    const value = Math.min(Number(e.target.value), bonusPoints);
-    setSelectedBonus(value);
-  };
-
-  const handleSubmit = () => {
-    if (finalCost <= 0) {
-      // Здесь можно добавить логику для завершения покупки
-      alert("Покупка завершена!");
-      setServices([]); // Очистка корзины после покупки
-      setSelectedBonus(0);
-    } else {
-      alert(`Необходимо оплатить: ${finalCost} рублей`);
-    }
-  };
   return (
-    <>
-      <h1>Корзина</h1>
-      <button onClick={addService}>Добавить услугу</button>
-      <ul>
-        {services.map((service) => (
-          <li key={service.id}>
-            {service.name} - {service.price} рублей
-            <button onClick={() => removeService(service.id)}>Удалить</button>
-          </li>
-        ))}
-      </ul>
-      <h2>Общая стоимость: {totalCost} рублей</h2>
-      <h2>Ваши бонусы: {bonusPoints}</h2>
-      <input
-        type="number"
-        value={selectedBonus}
-        onChange={handleBonusChange}
-        placeholder="Использовать бонусы"
-      />
-      <button onClick={handleSubmit}>Оплатить</button>
-      <h2>Сумма к оплате: {finalCost} рублей</h2>
-    </>
+    <div>
+      <h2>Ваш заказ</h2>
+      {cart.length > 0 ? (
+        <>
+          {cart.map((item, index) => {
+            // Проверяем, что item не равен null и у него есть необходимые свойства
+            if (!item) {
+              return <p key={`${index}`}>Некорректный товар в корзине.</p>;
+            }
+            return (
+              <div key={`${item.id}-${index}`}>
+                {/* Генерация уникального ключа */}
+                <h3>{item.name || "Без названия"}</h3>
+                <p>{item.price ? `${item.price} ₸` : "Цена не указана"}</p>
+                <button onClick={() => removeItem(item.id)}>
+                  Удалить
+                </button>{" "}
+                {/* Кнопка удаления товара */}
+              </div>
+            );
+          })}
+          <h3>Итого: {totalPrice.toLocaleString()} ₸</h3>
+        </>
+      ) : (
+        <p>Корзина пуста.</p>
+      )}
+    </div>
   );
-}
+};
+
+export default Order;

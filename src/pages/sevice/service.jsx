@@ -1,23 +1,31 @@
-import { useState, useEffect } from "react";
-import Loader from "../../UI/Loader/loader";
+import React, { useState, useEffect } from "react";
+import Skeleton from "react-loading-skeleton"; // Импортируем скелетоны
 import { db } from "../../base/base";
 import { collection, getDocs } from "firebase/firestore";
-import Slider from "react-slick"; // Импорт слайдера
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import clasess from "./service.module.scss";
-import LinkNavigation from "../../UI/LinkNavigation/LinkNavigation";
 import ByuButton from "../../UI/BuyButton/ByuButton";
+import NextArrow from "../../UI/ArrowSlide/ArrowSlide";
+import AddInfoBtn from "../../UI/AddInfoBtn/AddInfoBtn";
+import ServiceList from "../../components/ServiceList/ServiceList";
+import { motion, AnimatePresence } from "framer-motion";
+import { message } from "antd"; // Добавлено для использования message
 
-const ImageSlider = ({ items }) => {
+const ImageSlider = ({ items, isAuthorized }) => {
+  const promoItems = items.filter((item) => item.promo);
+  const isSingleSlide = promoItems.length === 1; // Проверка на один слайд
   const settings = {
     dots: true,
-    infinite: true,
+    infinite: !isSingleSlide, // Отключаем бесконечный цикл для одного слайда
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    autoplay: true,
+    autoplay: !isSingleSlide, // Отключаем автопроигрывание для одного слайда
     autoplaySpeed: 3000,
+    nextArrow: isSingleSlide ? null : <NextArrow />,
   };
 
   const renderRating = (rating) => {
@@ -41,46 +49,95 @@ const ImageSlider = ({ items }) => {
 
   return (
     <div className={clasess.serviceContainer}>
-      <Slider className={clasess.slider} {...settings}>
-        {items.map((item) => (
-          <div className={clasess.sliderFireAct} key={item.id}>
-            <div className={clasess.rowsSlide}>
-              <div className={clasess.infoProductSlide}>
-                <h2 className={clasess.nameSlideProduct}>{item.name}</h2>
-                <h3> {item.description}</h3>
-                <div className={clasess.categuryAndRating}>
-                  <p>
-                    Рейтинг <span>{renderRating(item.rating)}</span>
-                  </p>
-                  <p>
-                    Категория <span> - {item.category}</span>
-                  </p>
+      {promoItems.length > 0 ? (
+        <Slider className={clasess.slider} {...settings}>
+          {promoItems.map((item) => (
+            <motion.div
+              className={clasess.sliderFireAct}
+              key={item.id}
+              initial={{ opacity: 0, scale: 0.95 }} // Начальное состояние
+              animate={{ opacity: 1, scale: 1 }} // Конечное состояние
+              exit={{ opacity: 0, scale: 0.95 }} // Состояние при выходе
+              transition={{ duration: 0.3 }} // Длительность анимации
+            >
+              <div className={clasess.rowsSlide}>
+                <div className={clasess.infoProductSlide}>
+                  <h2 className={clasess.nameSlideProduct}>
+                    {item.name
+                      ? `${item.name.slice(0, 25)}${
+                          item.name.length > 25 ? "..." : ""
+                        }`
+                      : "Название не указано"}
+                  </h2>
+                  <h3>
+                    {item.description
+                      ? `${item.description.slice(0, 117)}${
+                          item.description.length > 117 ? "..." : ""
+                        }`
+                      : "Описание отсутствует"}
+                  </h3>
+                  <div className={clasess.categuryAndRating}>
+                    <p>
+                      Рейтинг{" "}
+                      <span className={clasess.rating}>
+                        {item.rating
+                          ? renderRating(item.rating)
+                          : "Оценок пока нет"}
+                      </span>
+                    </p>
+                    <p>
+                      Категория{" "}
+                      <span>
+                        {item.category
+                          ? `${item.category.slice(0, 25)}${
+                              item.category.length > 25 ? "..." : ""
+                            }`
+                          : "Категория не указана"}
+                      </span>
+                    </p>
+                  </div>
+                  <div className={clasess.priceAndBtn}>
+                    <div className={clasess.btnSlide}>
+                      <ByuButton
+                        isAuthorized={isAuthorized}
+                        item={item} // Передаем item в компонент
+                      />
+                      <AddInfoBtn />
+                    </div>
+                    <h3>
+                      {item.price ? (
+                        `${item.price.toLocaleString()} ₸`
+                      ) : (
+                        <p style={{ fontSize: 20 }}>Цена не указана</p>
+                      )}
+                    </h3>
+                  </div>
                 </div>
-                <div className={clasess.priceAndBtn}>
-                  <ByuButton />
-                  <h3>{`${item.price.toLocaleString()} ₸`}</h3>
+                <div className={clasess.imgSlide}>
+                  <motion.img
+                    src={item.imageUrl || "/images/placeholder.png"}
+                    alt={item.name || "error"}
+                    style={{ width: "100%" }}
+                    initial={{ opacity: 0 }} // Начальное состояние
+                    animate={{ opacity: 1 }} // Конечное состояние
+                    transition={{ duration: 0.3 }} // Длительность анимации
+                  />
                 </div>
               </div>
-              <div className={clasess.imgSlide}>
-                <img
-                  src={item.imageUrl}
-                  alt={item.name}
-                  style={{ width: "100%" }}
-                />
-              </div>
-            </div>
-          </div>
-        ))}
-      </Slider>
+            </motion.div>
+          ))}
+        </Slider>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };
 
-// Компонент Service для получения данных и отображения слайдеров
 const Service = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const slidesPerGroup = 3; // Количество слайдов в каждой группе
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -102,27 +159,43 @@ const Service = () => {
     fetchData();
   }, []);
 
-  // Функция для группировки данных
-  const groupItems = (items, groupSize) => {
-    const grouped = [];
-    for (let i = 0; i < items.length; i += groupSize) {
-      grouped.push(items.slice(i, i + groupSize));
-    }
-    return grouped;
-  };
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+      } else {
+        setUser(null);
+      }
+    });
 
-  // Группировка данных для слайдеров
-  const groupedData = groupItems(data, slidesPerGroup);
+    return () => unsubscribe();
+  }, []);
+
+  const promoItems = data.filter((item) => item.promo);
 
   return (
     <div>
-      {loading ? (
-        <Loader />
-      ) : (
-        groupedData.map((group, index) => (
-          <ImageSlider key={index} items={group} />
-        ))
-      )}
+      <AnimatePresence>
+        <motion.div
+          key={loading ? "loading" : "loaded"}
+          className={clasess.serviceContainer}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.3 }}
+        >
+          {loading ? (
+            <div className={clasess.skeletonContainer}>
+              <Skeleton height={300} style={{ marginBottom: "20px" }} />
+              <Skeleton height={300} style={{ marginBottom: "20px" }} />
+            </div>
+          ) : (
+            <ImageSlider items={promoItems} isAuthorized={!!user} />
+          )}
+        </motion.div>
+      </AnimatePresence>
+      <ServiceList />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import classes from "./NavBar.module.scss";
 import logo from "../../assets/logo.png";
@@ -7,6 +7,7 @@ import AuthButtons from "../../components/authButton/AuthButtons"; // Импор
 import FirebaseImage from "../../components/FirebaseImage/FirebaseImage";
 
 const NavBar = () => {
+  const [cart, setCart] = useState([]); // Состояние корзины
   return (
     <header className={classes.header}>
       <div className="logo-header">
@@ -25,7 +26,7 @@ const NavBar = () => {
         <LinkNavigation to="/contact">О нас</LinkNavigation>
       </div>
       <div className={classes.linksOrderAcount}>
-        <AuthButtons />
+        <AuthButtons cart={cart} />
       </div>
     </header>
   );

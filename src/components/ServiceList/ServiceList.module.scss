@@ -1,0 +1,74 @@
+.cardsRows {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 100px;
+  width: 100%;
+  margin: 50px 0px;
+}
+
+.filter {
+  max-width: 250px;
+}
+
+.selectService {
+  margin-top: 30px;
+}
+
+.imgCardService {
+  background-color: #373737;
+  padding: 15px;
+  border-radius: 30px;
+  margin-bottom: 20px;
+  img {
+    max-width: 220px;
+    max-height: 180px;
+    overflow: hidden;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: white;
+  text-align: center;
+  max-width: 250px;
+}
+
+.NameCardService {
+  margin: 15px 0px;
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.DecrCardSerivec {
+  color: #a0a0a0;
+  margin-bottom: 15px;
+}
+
+.priceService {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 18px;
+  span {
+    color: yellow;
+  }
+}
+
+.BtnCardService {
+  width: 100%;
+  margin-top: 15px;
+
+  button {
+    width: 100%;
+    background-color: #9054f8;
+    color: white;
+    transition: all 0.3s ease;
+  }
+}
+
+.BtnCardService button:hover {
+  background-color: #9054f8aa;
+  transition: all 0.3s ease;
+}

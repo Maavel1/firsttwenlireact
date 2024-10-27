@@ -16,13 +16,25 @@
 .slick-slider,
 .slick-initialized,
 .slick-list {
-  border-radius: 40px;
+  border-radius: 40px !important;
 }
 
 .rowsSlide {
   display: flex;
   align-items: center;
   gap: 50px;
+}
+
+.rating {
+  span {
+    color: yellow !important;
+  }
+}
+
+.btnSlide {
+  display: flex;
+  gap: 20px;
+  align-items: center;
 }
 
 .infoProductSlide {
@@ -40,6 +52,12 @@
     font-weight: 300;
     font-size: 20px;
   }
+}
+
+.slick-dots li.slick-active button:before,
+.slick-dots li button:before {
+  opacity: 0.75;
+  color: #ffffff !important;
 }
 
 .infoProductSlide,
