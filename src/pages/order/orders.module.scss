@@ -1,0 +1,196 @@
+.ordersRows {
+  display: flex;
+  justify-content: space-between;
+  gap: 90px;
+}
+
+.imgCardOrders {
+  background-color: #373737;
+  border-radius: 30px;
+  img {
+    max-width: 200px;
+    max-height: 200px;
+    padding: 15px;
+  }
+}
+
+.ContaunerlistOrders {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.339);
+  border-radius: 30px;
+  padding: 0px 20px 0px 0px;
+  margin-top: 25px;
+}
+
+.listOrders {
+  flex: 1 0;
+  max-width: 60%;
+}
+
+.MainInfoCard {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+.InfoCardOrders {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.BtnDeleteOrders {
+  button {
+    background-color: transparent;
+    transition: all 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #27272756;
+    transition: all 0.3s ease;
+    border-radius: 20px;
+  }
+}
+.ByFormOrdersRows {
+  width: 35%;
+  position: fixed;
+  right: -54px;
+  top: 142px;
+}
+.formOrders {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: white;
+  max-width: 300px;
+  padding: 20px;
+  border-radius: 30px;
+  color: black;
+}
+
+.titleFormOrders {
+  h1 {
+    font-size: 19px;
+    color: #505050;
+  }
+}
+
+.quantityControls {
+  background: #f3f3f7;
+  border-radius: 10px;
+  padding: 5px;
+  span {
+    color: #696f7a;
+  }
+  button {
+    padding: 3px 20px;
+    color: #696f7a;
+  }
+}
+
+.titleRowsNoneOrders {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  h1 {
+    font-size: 32px;
+    color: white;
+  }
+}
+
+.DecrRowsNoneOrders {
+  color: #777777;
+  p {
+    font-size: 17px;
+  }
+}
+
+.rowsNoneOrders {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 15px;
+  text-align: center;
+  max-width: 470px;
+
+  a {
+    display: inline-block;
+    background-color: white;
+    padding: 15px;
+    border-radius: 30px;
+    color: #9054f8;
+  }
+}
+.NoneOrders {
+  position: absolute;
+  left: 32%;
+  top: 4%;
+  transform: translate(-50%, 40%);
+}
+
+.imageNoneOrders {
+  margin: 10px 0px;
+  img {
+    max-width: 170px;
+  }
+}
+
+.ApplyPromocodeBtn {
+  width: 100%;
+  background-color: #9054f8;
+  color: white;
+  margin-top: 10px;
+  transition: all 0.3s ease;
+}
+
+.ApplyPromocodeBtn:hover {
+  background-color: #9054f89c;
+  transition: all 0.3s ease;
+}
+
+.error {
+  margin: 11px 0px 4px 0px;
+  color: rgb(255, 91, 91);
+}
+
+.inputPromocode {
+  font-size: 16px;
+}
+
+.AddOrders {
+  button {
+    background-color: black;
+    color: white;
+    width: 100%;
+    transition: all 0.3s ease;
+  }
+
+  button:hover {
+    background-color: rgba(0, 0, 0, 0.621);
+    transition: all 0.3s ease;
+  }
+}
+
+.helpPromo {
+  font-size: 14px;
+  margin-top: 9px;
+}
+
+.ApplyPolicy {
+  font-size: 13px;
+}
+
+.agreement {
+  display: flex;
+  flex-direction: column;
+}
+
+.blockCheck {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

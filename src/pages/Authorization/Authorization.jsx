@@ -188,7 +188,7 @@ const Authorization = () => {
           error={error}
           toggleResetPassword={toggleResetPassword}
           toggleForm={toggleForm}
-          loginWithGoogle={loginWithGoogle} // Теперь loginWithGoogle передается корректно
+          loginWithGoogle={loginWithGoogle}
         />
       </FormContainer>
     </div>

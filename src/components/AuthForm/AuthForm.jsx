@@ -4,15 +4,10 @@ import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import classes from "../../pages/Authorization/registration.module.scss";
-import google from "../../assets/Google.svg";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import arrow from "../../assets/arrow-u-up-left-svgrepo-com.svg";
-import LinkNavigation from "../../UI/LinkNavigation/LinkNavigation";
 import FirebaseImageByName from "../FirebaseImage/FirebaseImage";
 
 const AuthForm = ({
   initialValues = { email: "", password: "", confirmPassword: "" },
-  validationSchema,
   onSubmit,
   isLogin,
   isResetPassword,
@@ -21,21 +16,37 @@ const AuthForm = ({
   error,
   toggleResetPassword,
   toggleForm,
-  loginWithGoogle = { loginWithGoogle },
+  loginWithGoogle,
 }) => {
+  // Создание схемы валидации
+  const validationSchema = Yup.object().shape({
+    email: Yup.string()
+      .email("Некорректный email")
+      .required("Email обязателен"),
+    password: Yup.string()
+      .min(6, "Пароль должен содержать не менее 6 символов")
+      .matches(/^[a-zA-Z]+$/, "Пароль должен содержать только английские буквы")
+      .matches(/[A-Z]/, "Пароль должен содержать хотя бы одну заглавную букву")
+      .required("Пароль обязателен"),
+    confirmPassword: isLogin
+      ? Yup.string()
+      : Yup.string()
+          .oneOf([Yup.ref("password"), null], "Пароли должны совпадать")
+          .required("Подтверждение пароля обязательно"),
+  });
+
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
       onSubmit={onSubmit}
     >
-      {({ handleSubmit, handleChange, values, errors }) => (
+      {({ handleSubmit, handleChange, values, errors, touched }) => (
         <Form onFinish={handleSubmit} autoComplete="off">
           <h2 className={classes.titleForm}>
             {isResetPassword ? (
               <div className={classes.titleFormResetPass}>
                 <a type="link" onClick={toggleForm}>
-                  {" "}
                   <FirebaseImageByName
                     imageName="arrow-u-up-left-svgrepo-com.svg"
                     alt="arrow"
@@ -52,9 +63,8 @@ const AuthForm = ({
 
           <Form.Item
             label="Email"
-            name="email"
-            validateStatus={errors.email ? "error" : ""}
-            help={errors.email}
+            validateStatus={touched.email && errors.email ? "error" : ""}
+            help={touched.email && errors.email}
             labelCol={{ span: 24 }}
             wrapperCol={{ span: 24 }}
             className={classes.customLabel}
@@ -72,9 +82,10 @@ const AuthForm = ({
             <>
               <Form.Item
                 label="Пароль"
-                name="password"
-                validateStatus={errors.password ? "error" : ""}
-                help={errors.password}
+                validateStatus={
+                  touched.password && errors.password ? "error" : ""
+                }
+                help={touched.password && errors.password}
                 labelCol={{ span: 24 }}
                 wrapperCol={{ span: 24 }}
                 className={classes.customLabel}
@@ -90,11 +101,13 @@ const AuthForm = ({
 
               {!isLogin && (
                 <Form.Item
-                  className={classes.customLabel}
                   label="Подтвердите пароль"
-                  name="confirmPassword"
-                  validateStatus={errors.confirmPassword ? "error" : ""}
-                  help={errors.confirmPassword}
+                  validateStatus={
+                    touched.confirmPassword && errors.confirmPassword
+                      ? "error"
+                      : ""
+                  }
+                  help={touched.confirmPassword && errors.confirmPassword}
                   labelCol={{ span: 24 }}
                   wrapperCol={{ span: 24 }}
                 >
@@ -143,6 +156,7 @@ const AuthForm = ({
               )}
             </p>
           )}
+
           <div className={classes.btnSubmitForm}>
             <Form.Item>
               <Button type="primary" htmlType="submit">
@@ -154,6 +168,7 @@ const AuthForm = ({
               </Button>
             </Form.Item>
           </div>
+
           {!isResetPassword && (
             <div className={classes.formLinks}>
               <p>

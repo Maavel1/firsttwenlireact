@@ -50,7 +50,7 @@ const firebaseConfig = {
 // Инициализация Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const db = getFirestore(app); // Экспорт Firestore для работы с базой данных
 // Инициализация провайдера Google
 const googleProvider = new GoogleAuthProvider();
 

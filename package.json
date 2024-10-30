@@ -36,6 +36,7 @@
     "react-typed": "^2.0.12",
     "sass": "^1.80.3",
     "slick-carousel": "^1.8.1",
+    "uuid": "^11.0.2",
     "yup": "^1.4.0"
   },
   "devDependencies": {
