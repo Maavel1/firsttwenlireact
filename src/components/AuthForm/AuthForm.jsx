@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Form, Input, Button, Checkbox } from "antd";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import classes from "../../pages/Authorization/registration.module.scss";
 import FirebaseImageByName from "../FirebaseImage/FirebaseImage";
+import { Link } from "react-router-dom";
 
 const AuthForm = ({
   initialValues = { email: "", password: "", confirmPassword: "" },
@@ -18,6 +19,9 @@ const AuthForm = ({
   toggleForm,
   loginWithGoogle,
 }) => {
+  const [termsAccepted, setTermsAccepted] = useState(false); // Состояние для отслеживания согласия с условиями
+  const [termsError, setTermsError] = useState("");
+
   // Создание схемы валидации
   const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -25,8 +29,10 @@ const AuthForm = ({
       .required("Email обязателен"),
     password: Yup.string()
       .min(6, "Пароль должен содержать не менее 6 символов")
-      .matches(/^[a-zA-Z]+$/, "Пароль должен содержать только английские буквы")
-      .matches(/[A-Z]/, "Пароль должен содержать хотя бы одну заглавную букву")
+      .matches(
+        /^(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]+$/,
+        "Пароль должен содержать только английские буквы и цифры, а также хотя бы одну заглавную букву"
+      )
       .required("Пароль обязателен"),
     confirmPassword: isLogin
       ? Yup.string()
@@ -35,11 +41,20 @@ const AuthForm = ({
           .required("Подтверждение пароля обязательно"),
   });
 
+  const handleFormSubmit = (values) => {
+    if (!termsAccepted && !isLogin) {
+      setTermsError("Необходимо согласиться с условиями.");
+      return;
+    }
+    setTermsError("");
+    onSubmit(values);
+  };
+
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
-      onSubmit={onSubmit}
+      onSubmit={handleFormSubmit}
     >
       {({ handleSubmit, handleChange, values, errors, touched }) => (
         <Form onFinish={handleSubmit} autoComplete="off">
@@ -143,6 +158,22 @@ const AuthForm = ({
                 </Form.Item>
               )}
             </>
+          )}
+
+          {!isLogin && (
+            <Form.Item>
+              <Checkbox
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+              >
+                Я согласен(на) с{" "}
+                <Link>условиями обработки персональных данных</Link> и{" "}
+                <Link>политикой конфиденциальности</Link>.
+              </Checkbox>
+              {termsError && (
+                <p style={{ color: "red", marginTop: 5 }}>{termsError}</p>
+              )}
+            </Form.Item>
           )}
 
           {error && (

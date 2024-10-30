@@ -9,7 +9,13 @@ import {
   browserLocalPersistence,
 } from "firebase/auth";
 import classes from "./registration.module.scss";
-import { registerUser, loginUser, resetPassword, auth } from "../../base/base";
+import {
+  registerUser,
+  loginUser,
+  resetPassword,
+  auth,
+  sendVerificationEmail,
+} from "../../base/base";
 import * as Yup from "yup";
 import FormContainer from "../../components/FormContainer/FormContainer";
 import AuthForm from "../../components/AuthForm/AuthForm";
@@ -146,9 +152,6 @@ const Authorization = () => {
         .then((user) => {
           sendVerificationEmail(user);
           setError("Регистрация успешна! Проверьте почту для подтверждения.");
-          setTimeout(() => {
-            navigate("/profile");
-          }, 3000);
         })
         .catch((error) => {
           setError(`Ошибка регистрации: ${error.message}`);
