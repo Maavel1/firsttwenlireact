@@ -70,3 +70,25 @@ a {
   justify-content: space-between;
   min-height: 104vh;
 }
+
+.ant-pagination .ant-pagination-item:not(.ant-pagination-item-active):hover {
+  background-color: #9054f8;
+  a {
+    color: white;
+  }
+}
+
+:where(.css-dev-only-do-not-override-ni1kz0).ant-pagination
+  .ant-pagination-disabled
+  .ant-pagination-item-link,
+:where(.css-dev-only-do-not-override-ni1kz0).ant-pagination
+  .ant-pagination-disabled:hover
+  .ant-pagination-item-link,
+:where(.css-dev-only-do-not-override-ni1kz0).ant-pagination
+  .ant-pagination-prev
+  button,
+:where(.css-dev-only-do-not-override-ni1kz0).ant-pagination
+  .ant-pagination-next
+  button {
+  color: #8a8a8a;
+}

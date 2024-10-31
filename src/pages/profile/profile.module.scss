@@ -1,0 +1,71 @@
+.rowsOrders {
+  padding-bottom: 25px;
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.BlockOrders {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border: 1px solid #bf9aff38;
+  background-color: #00000047;
+  border-radius: 15px;
+}
+
+.titleProfileOrders {
+  font-size: 25px;
+  margin: 25px 0px;
+}
+
+.AvatarProfile {
+  border-radius: 50%;
+  margin: 8px 0px;
+}
+
+.FormSettingProfile {
+  background-color: white;
+  padding: 25px;
+  border-radius: 15px;
+  max-width: 32%;
+  color: black;
+  flex: 1;
+  min-height: 350px;
+  min-width: 400px;
+  transition: all 0.3s ease;
+}
+
+.ListOrders {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  flex: 1 0;
+  max-width: 80%;
+}
+
+.ListTable {
+  font-size: 20px;
+}
+
+.TitleTab {
+  display: flex;
+  gap: 7px;
+}
+
+.textTabsSettings {
+  font-size: 17px;
+  margin: 10px 0px;
+}
+
+.logout {
+  background-color: #f15353;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.logout:hover {
+  background-color: #fc2525;
+  transition: all 0.3s ease;
+}

@@ -49,6 +49,7 @@ const Authorization = () => {
   }, [searchParams, isResetPassword]);
 
   const toggleResetPassword = () => {
+    console.log("Toggle Reset Password clicked");
     setIsAnimating(true);
     setTimeout(() => {
       setIsAnimating(false);

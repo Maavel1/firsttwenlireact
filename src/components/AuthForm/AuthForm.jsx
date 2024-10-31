@@ -19,11 +19,11 @@ const AuthForm = ({
   toggleForm,
   loginWithGoogle,
 }) => {
-  const [termsAccepted, setTermsAccepted] = useState(false); // Состояние для отслеживания согласия с условиями
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [termsError, setTermsError] = useState("");
 
-  // Создание схемы валидации
-  const validationSchema = Yup.object().shape({
+  // Определяем схемы валидации для каждой формы
+  const loginValidationSchema = Yup.object().shape({
     email: Yup.string()
       .email("Некорректный email")
       .required("Email обязателен"),
@@ -34,15 +34,42 @@ const AuthForm = ({
         "Пароль должен содержать только английские буквы и цифры, а также хотя бы одну заглавную букву"
       )
       .required("Пароль обязателен"),
-    confirmPassword: isLogin
-      ? Yup.string()
-      : Yup.string()
-          .oneOf([Yup.ref("password"), null], "Пароли должны совпадать")
-          .required("Подтверждение пароля обязательно"),
   });
 
+  const registrationValidationSchema = Yup.object().shape({
+    email: Yup.string()
+      .email("Некорректный email")
+      .required("Email обязателен"),
+    password: Yup.string()
+      .min(6, "Пароль должен содержать не менее 6 символов")
+      .matches(
+        /^(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]+$/,
+        "Пароль должен содержать только английские буквы и цифры, а также хотя бы одну заглавную букву"
+      )
+      .required("Пароль обязателен"),
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref("password"), null], "Пароли должны совпадать")
+      .required("Подтверждение пароля обязательно"),
+  });
+
+  const resetPasswordValidationSchema = Yup.object().shape({
+    email: Yup.string()
+      .email("Некорректный email")
+      .required("Email обязателен"),
+  });
+
+  const getValidationSchema = () => {
+    if (isResetPassword) {
+      return resetPasswordValidationSchema;
+    }
+    if (isLogin) {
+      return loginValidationSchema;
+    }
+    return registrationValidationSchema;
+  };
+
   const handleFormSubmit = (values) => {
-    if (!termsAccepted && !isLogin) {
+    if (!termsAccepted && !isLogin && !isResetPassword) {
       setTermsError("Необходимо согласиться с условиями.");
       return;
     }
@@ -53,7 +80,7 @@ const AuthForm = ({
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={validationSchema}
+      validationSchema={getValidationSchema()} // Используем динамическую схему валидации
       onSubmit={handleFormSubmit}
     >
       {({ handleSubmit, handleChange, values, errors, touched }) => (
@@ -160,7 +187,7 @@ const AuthForm = ({
             </>
           )}
 
-          {!isLogin && (
+          {!isLogin && !isResetPassword && (
             <Form.Item>
               <Checkbox
                 checked={termsAccepted}

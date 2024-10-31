@@ -125,18 +125,17 @@ export const loginUser = async (email, password) => {
   }
 };
 
-// Функция для сброса пароля
 export const resetPassword = async (email) => {
   try {
     await firebaseSendPasswordResetEmail(auth, email);
-    console.log("Письмо для сброса пароля отправлено.");
+    console.log("Письмо для сброса пароля отправлено на email:", email);
   } catch (error) {
+    const errorMessage = getErrorMessage(error);
     console.error(
       "Ошибка при отправке письма для сброса пароля:",
-      error.code,
-      error.message
+      errorMessage
     );
-    throw error;
+    throw new Error(errorMessage);
   }
 };
 
