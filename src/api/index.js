@@ -1,21 +1,33 @@
 import express from "express";
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import cors from "cors"; // Импортируем cors
 import multer from "multer"; // Импортируем multer
 import path from "path"; // Импортируем path для работы с путями
+import mongoose from "mongoose"; // Импорт mongoose для подключения
+import User from "./userModel.js"; // Если файл в той же папке
 
 const app = express();
 const port = 5000;
 
-// Строка подключения к вашей базе данных
+
 const uri =
   "mongodb+srv://githubmaavel:mWtaRUWXTiaYB56F@cluster0.no35j.mongodb.net/FirsTwenli?retryWrites=true&w=majority";
 
+
 const client = new MongoClient(uri);
 
+
+const corsOptions = {
+  origin: "http://localhost:5173", // Разрешить доступ только с этого домена (например, фронтенд на другом порту)
+  methods: ["GET", "POST", "PUT", "DELETE"], // Разрешить методы
+  allowedHeaders: ["Content-Type"], // Разрешить определенные заголовки
+};
+
 // Включаем CORS
-app.use(cors()); // Это позволит всем доменам обращаться к вашему API
-app.use(express.json()); // Это позволит вашему серверу обрабатывать JSON
+app.use(cors(corsOptions)); // Эта строка ставится первой
+
+app.use(express.json()); // Для обработки JSON-запросов
+app.use(multer({ dest: "uploads/" }).single("image")); // Для обработки файлов
 
 // Настройка multer для сохранения загруженных файлов
 const storage = multer.diskStorage({
@@ -28,11 +40,9 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
-
-// Подключаемся к базе данных при запуске сервера
 async function connectToDatabase() {
   try {
-    await client.connect();
+    await mongoose.connect(uri);
     console.log("Успешно подключились к MongoDB.");
   } catch (error) {
     console.error("Ошибка при подключении к MongoDB:", error);
@@ -103,6 +113,38 @@ app.post("/services", upload.single("image"), async (req, res) => {
   }
 });
 
+// Маршрут регистрации пользователя с Firebase
+app.post("/register", async (req, res) => {
+  const { email, password, uid } = req.body; // Получаем данные от клиента
+
+  try {
+    // Проверка, существует ли уже пользователь с таким UID
+    const existingUser = await User.findOne({ uid });
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ message: "Пользователь с таким UID уже существует." });
+    }
+
+    // Создаем нового пользователя в MongoDB
+    const newUser = new User({
+      email, // добавляем email в MongoDB
+      password, // добавляем пароль в MongoDB, если нужно
+      uid,
+      savedPosts: [], // Изначально пустой список сохраненных постов
+    });
+
+    // Сохраняем пользователя в базе данных
+    await newUser.save();
+    res
+      .status(201)
+      .json({ message: "Пользователь зарегистрирован успешно", user: newUser });
+  } catch (error) {
+    console.error("Ошибка при регистрации пользователя:", error);
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+});
+
 // Закрытие подключения при завершении работы сервера
 process.on("SIGINT", async () => {
   await client.close();
@@ -114,4 +156,129 @@ process.on("SIGINT", async () => {
 app.listen(port, async () => {
   await connectToDatabase();
   console.log(`Сервер запущен на http://localhost:${port}`);
+});
+
+// Маршруты для работы с новостями
+app.get("/news", async (req, res) => {
+  try {
+    const database = client.db("FirstTwenli");
+    const collection = database.collection("News");
+
+    // Получение уникальных категорий
+    const categories = await collection.distinct("category");
+
+    // Получение популярных постов (сортировка по просмотрам и лайкам)
+    const popularPosts = await collection
+      .find({})
+      .sort({ views: -1, likes: -1 })
+      .toArray();
+
+    // Возвращаем категории и популярные посты в одном объекте
+    res.json({ categories, popularPosts });
+  } catch (error) {
+    console.error("Ошибка при получении данных для страницы /news:", error);
+    res.status(500).json({ message: "Ошибка сервера", error: error.message });
+  }
+});
+
+app.get("/news/:id", async (req, res) => {
+  try {
+    const postId = req.params.id;
+
+    // Проверка, является ли id валидным ObjectId
+    if (!ObjectId.isValid(postId)) {
+      return res.status(400).json({ message: "Неверный формат ID" });
+    }
+
+    const database = client.db("FirstTwenli");
+    const collection = database.collection("News");
+
+    // Создаем ObjectId и выполняем поиск
+    const post = await collection.findOne({ _id: new ObjectId(postId) });
+
+    if (!post) {
+      return res.status(404).json({ message: "Пост не найден." });
+    }
+
+    res.status(200).json(post);
+  } catch (error) {
+    console.error("Ошибка при получении поста:", error);
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+});
+
+app.get("/news/popular", async (req, res) => {
+  try {
+    const database = client.db("FirstTwenli");
+    const collection = database.collection("News");
+
+    // Запрос популярных постов, сортировка по лайкам
+    const popularPosts = await collection
+      .find()
+      .sort({ likes: -1 }) // Сортировка по лайкам
+      .limit(5) // Ограничиваем количество популярных постов
+      .toArray();
+
+    if (popularPosts.length === 0) {
+      return res.status(404).json({ message: "Популярные посты не найдены." });
+    }
+
+    res.status(200).json(popularPosts);
+  } catch (error) {
+    console.error("Ошибка при получении популярных постов:", error);
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+});
+
+// Добавляем маршрут для сохранения поста пользователем
+app.post("/savePost", async (req, res) => {
+  const { userUid, postId } = req.body;
+  try {
+    const user = await User.findOne({ uid: userUid });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (!user.savedPosts.includes(postId)) {
+      user.savedPosts.push(postId);
+      await user.save();
+    }
+    res.status(200).json(user.savedPosts);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Добавляем маршрут для сохранения UID пользователя
+app.post("/saveUserUid", async (req, res) => {
+  const { uid } = req.body; // Получаем UID из тела запроса
+  try {
+    console.log("Получен UID:", uid); // Логируем UID для отладки
+
+    // Проверка, существует ли пользователь с таким UID
+    let user = await User.findOne({ uid });
+    if (!user) {
+      // Если пользователь не найден, создаем нового
+      user = new User({ uid, savedPosts: [] });
+      await user.save();
+    }
+
+    res.status(200).json({ message: "User UID saved", user });
+  } catch (error) {
+    console.error("Ошибка при сохранении UID пользователя:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+// Получаем список пользователей
+app.get("/users", async (req, res) => {
+  try {
+    const database = client.db("FirstTwenli"); // Подключаемся к базе данных FirstTwenli
+    const collection = database.collection("users"); // Подключаемся к коллекции users
+
+    const users = await collection.find().toArray(); // Извлекаем всех пользователей из коллекции
+    res.status(200).json(users); // Отправляем список пользователей в ответ
+  } catch (error) {
+    console.error("Ошибка при получении пользователей:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
 });
